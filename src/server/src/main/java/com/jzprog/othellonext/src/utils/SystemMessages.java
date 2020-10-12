@@ -5,4 +5,10 @@ public class SystemMessages {
 	public enum ValidationTypes {
 		
 	}
+	
+    public enum TileStates {
+		EMPTY,
+		BLACK,
+		WHITE
+	}
 }
