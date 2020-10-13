@@ -1,11 +1,15 @@
 package com.jzprog.othellonext.src.services;
 
-import org.springframework.stereotype.Service;
+import java.util.Random;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.ScopedProxyMode;
 import com.jzprog.othellonext.src.model.Action;
 import com.jzprog.othellonext.src.utils.SystemMessages.TileStates;
 
 @Service
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class GameService {
     
 	private GameState gameState;
@@ -14,12 +18,13 @@ public class GameService {
 	private Action currentMove;
 	private TileStates player;
 	
-	public void init() {
+	public int init() {
 		//todo validate -> always
 		this.utility = -1;
 		initBoard();
 		gameState = new InitialState();
 		play();
+		return new Random().nextInt();
 	}
 	
 	public GameState getState() {

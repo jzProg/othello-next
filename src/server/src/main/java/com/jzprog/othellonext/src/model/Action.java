@@ -1,10 +1,15 @@
 package com.jzprog.othellonext.src.model;
 
+import org.springframework.stereotype.Component;
+
 //represents a 2D point
+@Component
 public class Action {
 	
 	private int x; // x coordinate for row
 	private int y; // y coordinate for column
+	
+	public Action(){}
 	
 	public Action(int x,int y){
 		this.x = x;

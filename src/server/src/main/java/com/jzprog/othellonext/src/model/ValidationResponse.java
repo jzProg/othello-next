@@ -1,9 +1,14 @@
 package com.jzprog.othellonext.src.model;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class ValidationResponse {
 	
 	private boolean isSuccess;
 	private String errorMessage;
+	
+	public ValidationResponse() {}
 	
 	public ValidationResponse(boolean result, String errorMessage) {
 		setSuccess(result);
