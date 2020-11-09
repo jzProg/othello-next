@@ -23,7 +23,7 @@ public class SelectTurnValidator implements ValidationService {
 
 	@Override
 	public ValidationTypes getType() {
-		return SystemMessages.ValidationTypes.SELECT_VAIDATION;
+		return SystemMessages.ValidationTypes.SELECT_VALIDATION;
 
 	}
 

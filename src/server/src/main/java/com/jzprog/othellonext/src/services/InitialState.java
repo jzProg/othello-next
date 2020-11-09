@@ -1,14 +1,16 @@
 package com.jzprog.othellonext.src.services;
 
+import java.util.Random;
 import org.springframework.stereotype.Component;
 
 @Component
 public class InitialState implements GameState {
-
+	
 	@Override
 	public void makeMove(GameService game) {
-		// TODO show choose modal
-		
+		game.setUtility(-1);
+		game.initBoard();
+		game.setGameId(Math.abs(new Random().nextInt()));
 	}
 
 	@Override

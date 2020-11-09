@@ -1,7 +1,6 @@
 package com.jzprog.othellonext.src.services.validation;
 
 import org.springframework.stereotype.Service;
-
 import com.jzprog.othellonext.src.model.Validatable;
 import com.jzprog.othellonext.src.utils.SystemMessages;
 import com.jzprog.othellonext.src.utils.SystemMessages.ValidationTypes;

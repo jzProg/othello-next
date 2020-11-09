@@ -12,7 +12,7 @@ public class SystemMessages {
 	public enum ValidationTypes {
 		RESET_GAME_VALIDATION,
 		MOVE_VALIDITY,
-		SELECT_VAIDATION
+		SELECT_VALIDATION
 	}
 	
     public enum TileStates {

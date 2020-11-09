@@ -1,38 +1,35 @@
 package com.jzprog.othellonext.src.services;
 
-import java.util.Random;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.context.annotation.ScopedProxyMode;
 import com.jzprog.othellonext.src.model.Action;
+import com.jzprog.othellonext.src.model.ValidationResponse;
+import com.jzprog.othellonext.src.services.validation.ValidationStrategy;
+import com.jzprog.othellonext.src.utils.SystemMessages;
 import com.jzprog.othellonext.src.utils.SystemMessages.TileStates;
 
 @Service
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class GameService {
+	
+	@Autowired
+	ValidationStrategy validation;
     
 	private GameState gameState;
 	private TileStates[][] board;
 	private double utility; //value depending on the winner(1:win for black,0:win for white,0.5:draw,-1:non terminal state)
 	private Action currentMove;
 	private TileStates player;
+	private ValidationResponse completed;
+	private int gameId = -1;
 	
 	public int init() {
-		//todo validate -> always
-		this.utility = -1;
-		initBoard();
 		gameState = new InitialState();
-		play();
-		return Math.abs(new Random().nextInt());
-	}
-	
-	public GameState getState() {
-		return gameState;
-	}
-	
-	public void setState(GameState gameState) {
-		this.gameState = gameState;
+		setCompleted(validation.provideValidation(SystemMessages.ValidationTypes.RESET_GAME_VALIDATION, gameState)); // validate -> always
+        if (isCompleted().isSuccess()) play();
+		return gameId;
 	}
 	
 	public void play() {
@@ -60,8 +57,8 @@ public class GameService {
 	}
 
 	public void setCurrentMove(Action currentMove) {
-		//todo validate -> only when player turn
-		this.currentMove = currentMove;
+		setCompleted(validation.provideValidation(SystemMessages.ValidationTypes.MOVE_VALIDITY, gameState)); // validate -> only when player turn
+		if (isCompleted().isSuccess()) this.currentMove = currentMove;
 	}
 	
 	public TileStates getPlayer() {
@@ -69,11 +66,39 @@ public class GameService {
 	}
 
 	public void setPlayer(TileStates player) {
-		//todo validate -> only when initial
-		this.player = player;
+		setCompleted(validation.provideValidation(SystemMessages.ValidationTypes.SELECT_VALIDATION, gameState)); // validate -> only when initial
+		if (isCompleted().isSuccess()) this.player = player;
 	}
 
-	private void initBoard() {
+	public GameState getGameState() {
+		return gameState;
+	}
+
+	public void setGameState(GameState gameState) {
+		this.gameState = gameState;
+	}
+
+	public ValidationResponse isCompleted() {
+		return completed;
+	}
+
+	public void setCompleted(ValidationResponse completed) {
+		this.completed = completed;
+	}
+
+	public int getGameId() {
+		return gameId;
+	}
+
+	public void setGameId(int gameId) {
+		this.gameId = gameId;
+	}
+
+	public void setBoard(TileStates[][] board) {
+		this.board = board;
+	}
+
+	protected void initBoard() {
 		board = new TileStates[8][8];
 		for (int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
