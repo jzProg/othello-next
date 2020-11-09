@@ -36,18 +36,19 @@ export default {
       });
     },
     choose() {
-      this.stompClient.send(`/app/choose/${this.gameId}`, {}, JSON.stringify({playerColor: 'BLACK'}));
+      this.axios.get(`/api/game/choose`, { params: { playerColor: 'BLACK', gameId: this.gameId }}).then((response) => {
+        this.msgs.push(response.data);
+      })
     },
     play() {
-      this.stompClient.send(`/app/play/${this.gameId}`, {}, JSON.stringify({moveX: 1, moveY: 2}));
+      this.axios.get(`/api/game/play`, { params: { moveX: 1, moveY: 2, gameId: this.gameId }}).then((response) => {
+        this.msgs.push(response.data);
+      })
     },
     init() {
       this.axios.get(`/api/game/startNewGame`).then((response) => {
         this.gameId = response.data;
         this.msgs.push(`Game with id=${this.gameId} created!`);
-        this.stompClient.subscribe(`/topic/game/${this.gameId}`, (message) => {
-          this.msgs.push(JSON.parse(message.body));
-        });
       })
     }
   }

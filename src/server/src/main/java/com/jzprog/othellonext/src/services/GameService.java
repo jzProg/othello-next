@@ -24,7 +24,7 @@ public class GameService {
 		initBoard();
 		gameState = new InitialState();
 		play();
-		return new Random().nextInt();
+		return Math.abs(new Random().nextInt());
 	}
 	
 	public GameState getState() {

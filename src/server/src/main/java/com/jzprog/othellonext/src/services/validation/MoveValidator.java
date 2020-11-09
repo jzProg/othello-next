@@ -2,6 +2,7 @@ package com.jzprog.othellonext.src.services.validation;
 
 import org.springframework.stereotype.Service;
 
+import com.jzprog.othellonext.src.model.Action;
 import com.jzprog.othellonext.src.model.Validatable;
 import com.jzprog.othellonext.src.services.GameState;
 import com.jzprog.othellonext.src.services.PlayerTurnState;
@@ -13,8 +14,7 @@ public class MoveValidator implements ValidationService {
 
 	@Override
 	public boolean validate(Validatable object, Object... extraInfo) {
-		return ((GameState)object) instanceof PlayerTurnState; // TODO and is valid Move (through board parameter)
-
+		return ((GameState)object) instanceof PlayerTurnState && extraInfo != null && isValidMove(((Action)extraInfo[0]), ((SystemMessages.TileStates[][])extraInfo[1]));
 	}
 
 	@Override
@@ -25,6 +25,11 @@ public class MoveValidator implements ValidationService {
 	@Override
 	public ValidationTypes getType() {
 		return SystemMessages.ValidationTypes.MOVE_VALIDITY;
+	}
+	
+	private boolean isValidMove(Action move, SystemMessages.TileStates[][] gameBoard) {
+		// TODO implement
+		return true;
 	}
 
 }
