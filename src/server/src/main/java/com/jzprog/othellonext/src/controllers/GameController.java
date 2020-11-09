@@ -1,7 +1,6 @@
 package com.jzprog.othellonext.src.controllers;
 
 import java.util.logging.Logger;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +12,8 @@ import com.jzprog.othellonext.src.advices.ControllerAdvice;
 import com.jzprog.othellonext.src.model.Action;
 import com.jzprog.othellonext.src.model.StateDTO;
 import com.jzprog.othellonext.src.services.GameService;
-import com.jzprog.othellonext.src.utils.SystemMessages;
 
+import static com.jzprog.othellonext.src.utils.SystemMessages.*;
 
 @RestController
 @RequestMapping("/api/game")
@@ -26,7 +25,7 @@ public class GameController {
 	private GameService gameService;
 
 	@ControllerAdvice
-	@GetMapping("/startNewGame")
+	@GetMapping(INIT_ENDPOINT)
 	public ResponseEntity<?> initGame() {
 		int gameId = gameService.init();
 		if (!gameService.isCompleted().isSuccess()) {
@@ -36,25 +35,25 @@ public class GameController {
 	}
 	
 	@ControllerAdvice
-    @GetMapping("/play")
+    @GetMapping(PLAY_MOVE_ENDPOINT)
 	public ResponseEntity<?> play(@RequestParam("gameId") String gameId, StateDTO stateDTO) {
     	gameService.setCurrentMove(new Action(stateDTO.getMoveX(), stateDTO.getMoveY()));
     	if (gameService.isCompleted().isSuccess()) {
     		gameService.play();
     		gameService.nextState();
-    		return new ResponseEntity<>(SystemMessages.MoveResults.VALID_MOVE, HttpStatus.OK);
+    		return new ResponseEntity<>(MoveResults.VALID_MOVE, HttpStatus.OK);
     	}
 		return new ResponseEntity<>(gameService.isCompleted().getErrorMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
     
 
 	@ControllerAdvice
-    @GetMapping("/choose")
+    @GetMapping(SELECT_TURN_ENDPOINT)
 	public ResponseEntity<?> choose(@RequestParam("gameId") String gameId, StateDTO stateDTO) {
-    	gameService.setPlayer(SystemMessages.TileStates.valueOf(stateDTO.getPlayerColor()));
+    	gameService.setPlayer(TileStates.valueOf(stateDTO.getPlayerColor()));
     	if (gameService.isCompleted().isSuccess()) {
     		gameService.nextState();
-    		return new ResponseEntity<>(SystemMessages.INIT_GAME_SUCCESS, HttpStatus.OK);
+    		return new ResponseEntity<>(INIT_GAME_SUCCESS, HttpStatus.OK);
     	}
     	return new ResponseEntity<>(gameService.isCompleted().getErrorMessage(), HttpStatus.FORBIDDEN);	
 	}
