@@ -14,27 +14,9 @@ export default {
     return {
       msgs: [],
       gameId: null,
-      stompClient: null,
-      socket: null,
-      activeSubscription: null,
     }
   },
-  created () {
-    this.connectToSocket();
-  },
   methods: {
-    connectToSocket() {
-      // eslint-disable-next-line
-      this.socket = new SockJS('/ws-messaging');
-      // eslint-disable-next-line
-      this.stompClient = Stomp.over(this.socket);
-      this.stompClient.connect({}, (frame) => {
-        console.log('Connected: ' + frame);
-      }, () => {
-        console.log('Disconnect! Retrying connection...');
-        this.connectToSocket();
-      });
-    },
     choose() {
       this.axios.get(`/api/game/choose`, { params: { playerColor: 'BLACK', gameId: this.gameId }}).then((response) => {
         this.msgs.push(response.data);
