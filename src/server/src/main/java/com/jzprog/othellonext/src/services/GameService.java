@@ -57,7 +57,7 @@ public class GameService {
 	}
 
 	public void setCurrentMove(Action currentMove) {
-		setCompleted(validation.provideValidation(SystemMessages.ValidationTypes.MOVE_VALIDITY, gameState)); // validate -> only when player turn
+		setCompleted(validation.provideValidation(SystemMessages.ValidationTypes.MOVE_VALIDITY, gameState, currentMove, board)); // validate -> only when player turn
 		if (isCompleted().isSuccess()) this.currentMove = currentMove;
 	}
 	
@@ -96,6 +96,22 @@ public class GameService {
 
 	public void setBoard(TileStates[][] board) {
 		this.board = board;
+	}
+	
+	public boolean isTerminal(){ // per state (?)
+		return utility != -1;
+	}
+	
+	public void putDisc(TileStates playerColor) {
+		Action currentMove = getCurrentMove();
+		TileStates previousValue = board[currentMove.getX()][currentMove.getY()];
+		if (isSquareEmpty(previousValue)) {
+			previousValue  = playerColor;
+		}
+	}
+	
+	private boolean isSquareEmpty(TileStates square) {
+		return square.equals(TileStates.EMPTY);
 	}
 
 	protected void initBoard() {

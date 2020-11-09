@@ -3,6 +3,8 @@ package com.jzprog.othellonext.src.services;
 import java.util.Random;
 import org.springframework.stereotype.Component;
 
+import com.jzprog.othellonext.src.utils.SystemMessages;
+
 @Component
 public class InitialState implements GameState {
 	
@@ -15,8 +17,8 @@ public class InitialState implements GameState {
 
 	@Override
 	public void next(GameService game) {
-		// TODO player turn or AI turn
-		
+		GameState nextState = game.getPlayer().equals(SystemMessages.TileStates.BLACK) ?  new PlayerTurnState() : new AITurnState();
+		game.setGameState(nextState);	
 	}
 
 }

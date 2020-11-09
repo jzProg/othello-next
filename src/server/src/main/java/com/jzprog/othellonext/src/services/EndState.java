@@ -13,8 +13,8 @@ public class EndState implements GameState {
 
 	@Override
 	public void next(GameService game) {
-		// TODO initial (when call)
-		
+		GameState nextState = new InitialState();
+		game.setGameState(nextState);
 	}
 
 }
