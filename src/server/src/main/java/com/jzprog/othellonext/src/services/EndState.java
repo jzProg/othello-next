@@ -16,5 +16,4 @@ public class EndState implements GameState {
 		GameState nextState = new InitialState();
 		game.setGameState(nextState);
 	}
-
 }

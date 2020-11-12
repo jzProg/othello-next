@@ -3,9 +3,6 @@ package com.jzprog.othellonext.src.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.jzprog.othellonext.src.model.Action;
-import com.jzprog.othellonext.src.model.StateInfo;
-
-import static com.jzprog.othellonext.src.utils.SystemMessages.TileStates.*;
 
 @Component
 public class AITurnState implements GameState {
@@ -15,10 +12,9 @@ public class AITurnState implements GameState {
 
 	@Override
 	public void makeMove(GameService game) {
-		StateInfo info = new StateInfo(); // TODO fill object
-		Action AIMove = minMax.makeDecision(info);
+		Action AIMove = minMax.makeDecision(game.getInfo());
 		game.setCurrentMove(AIMove);
-		game.putDisc(game.getPlayer().equals(BLACK) ? WHITE : BLACK);
+		game.putDisc();
 	}
 
 	@Override
@@ -26,5 +22,4 @@ public class AITurnState implements GameState {
 		GameState nextState = game.isTerminal() ?  new EndState() : new PlayerTurnState();
 		game.setGameState(nextState);	
 	}
-
 }

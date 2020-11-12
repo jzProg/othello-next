@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.context.annotation.ScopedProxyMode;
 import com.jzprog.othellonext.src.model.Action;
+import com.jzprog.othellonext.src.model.StateInfo;
 import com.jzprog.othellonext.src.model.ValidationResponse;
 import com.jzprog.othellonext.src.services.validation.ValidationStrategy;
 import com.jzprog.othellonext.src.utils.SystemMessages;
@@ -18,10 +19,9 @@ public class GameService {
 	ValidationStrategy validation;
     
 	private GameState gameState;
-	private TileStates[][] board;
-	private double utility; //value depending on the winner(1:win for black,0:win for white,0.5:draw,-1:non terminal state)
+	private StateInfo gameInfo;
 	private Action currentMove;
-	private TileStates player;
+	private TileStates player; // the color of User player
 	private ValidationResponse completed;
 	private int gameId = -1;
 	
@@ -41,15 +41,11 @@ public class GameService {
 	}
 	
 	public TileStates[][] getBoard() {
-		return board;
+		return gameInfo.getOthelloBoard();
 	}
 	
 	public double getUtility() {
-		return utility;
-	}
-	
-	public void setUtility(double utility) {
-		this.utility = utility;
+		return gameInfo.getUtility();
 	}
 	
 	public Action getCurrentMove() {
@@ -57,7 +53,7 @@ public class GameService {
 	}
 
 	public void setCurrentMove(Action currentMove) {
-		setCompleted(validation.provideValidation(SystemMessages.ValidationTypes.MOVE_VALIDITY, gameState, currentMove, board)); // validate -> only when player turn
+		setCompleted(validation.provideValidation(SystemMessages.ValidationTypes.MOVE_VALIDITY, gameState, currentMove)); // validate -> only when player turn
 		if (isCompleted().isSuccess()) this.currentMove = currentMove;
 	}
 	
@@ -95,27 +91,24 @@ public class GameService {
 	}
 
 	public void setBoard(TileStates[][] board) {
-		this.board = board;
+	  gameInfo.setOthelloBoard(board);
 	}
 	
-	public boolean isTerminal(){ // per state (?)
-		return utility != -1;
+	public boolean isTerminal() {
+		return gameInfo.getUtility() != -1;
 	}
 	
-	public void putDisc(TileStates playerColor) {
-		Action currentMove = getCurrentMove();
-		TileStates previousValue = board[currentMove.getX()][currentMove.getY()];
-		if (isSquareEmpty(previousValue)) {
-			previousValue  = playerColor;
-		}
+	public StateInfo getInfo() {
+		return gameInfo;
 	}
 	
-	private boolean isSquareEmpty(TileStates square) {
-		return square.equals(TileStates.EMPTY);
+	public void putDisc() {
+		Action move = getCurrentMove();
+		gameInfo.putDisc(move.getX(), move.getY());
 	}
 
 	protected void initBoard() {
-		board = new TileStates[8][8];
+		TileStates[][] board = new TileStates[8][8];
 		for (int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
 				board[i][j] = TileStates.EMPTY;
@@ -125,5 +118,6 @@ public class GameService {
 		board[3][4] = TileStates.BLACK;
 		board[4][3] = TileStates.BLACK;
 		board[4][4] = TileStates.WHITE;
+		gameInfo = new StateInfo(board, TileStates.BLACK, -1);
 	}
 }

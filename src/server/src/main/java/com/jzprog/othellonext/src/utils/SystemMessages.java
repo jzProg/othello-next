@@ -12,6 +12,9 @@ public class SystemMessages {
 	public static final String INIT_GAME_SUCCESS = "A new Game initialized!";
 	public static final String SELECT_TURN_INVALID_ERROR = "You cannot choose color when game in progress...";
 	public static final String INVALID_MOVE_ERROR = "Invalid Move or on other player's turn...";
+	public static final String NON_EMPTY_MOVE_ERROR = "Invalid Move!Try Again!";
+	public static final String NO_AVAILABLE_MOVE_ERROR = "%s cannot play! Next Player's Turn!";
+
 
 	public enum ValidationTypes {
 		RESET_GAME_VALIDATION,

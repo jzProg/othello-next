@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.jzprog.othellonext.src.advices.LogMethodInfo;
 import com.jzprog.othellonext.src.model.Action;
 import com.jzprog.othellonext.src.model.StateInfo;
+import com.jzprog.othellonext.src.utils.SystemMessages.TileStates;
 
 
 @Service
@@ -36,34 +37,34 @@ public class MinMaxSearch  {
     }
 	
 	//returns player's valid available moves starting from the given state 
-	  List<Action> getActions(StateInfo state,String player){ 
+	List<Action> getActions(StateInfo state,String player){ 
 	    List<Action> list = new ArrayList<Action>();
 		for(Action a:state.getEmptySquares()){
 		  state.setSquareValue(a.getX(), a.getY(),player);
 		  if(state.checkForMatches(a.getX(), a.getY())){
 			list.add(a);
 		  }
-		  state.setSquareValue(a.getX(), a.getY(),"Empty");
+		  state.setSquareValue(a.getX(), a.getY(),TileStates.EMPTY.name());
 		}
 		return list;
-	  }
+	 }
 	  
 	//returns the player who is about to move
-	  public String getPlayer(StateInfo state){
-	    return state.getPlayerToMove();
-	  }
-
-	  //returns the state-result after performing the given action on the given state
-	  public StateInfo getResult(StateInfo state, Action action){
-	    StateInfo result = state.clone();
-		result.putDisc(action);
-		return result;
-	  }
+	public String getPlayer(StateInfo state){
+	   return state.getPlayerToMove();
+	}
+	
+	//returns the state-result after performing the given action on the given state
+	public StateInfo getResult(StateInfo state, Action action){
+	  StateInfo result = state.clone();
+      result.putDisc(action);
+	  return result;
+	}
 	  
-	  //checks if the given state is a terminal state of the game
-	  public boolean isTerminal(StateInfo state){
-		return state.getUtility() != -1;
-	  }
+	//checks if the given state is a terminal state of the game
+	public boolean isTerminal(StateInfo state){
+	  return state.getUtility() != -1;
+	}
 	
 	//finds the maximum value of given state's children values
 	private double maxValue(StateInfo state,double alpha,double beta){ 
@@ -95,40 +96,40 @@ public class MinMaxSearch  {
 
 	//produce a value for the given state depending on various factors such as disc parity and mobility
 	private double heuristicFunctionValue(StateInfo state){
-		  double value = 0;
-		  if (isTerminal(state)){
-		    value = state.getUtility();
-			if (value == 1){ // if winner is black player
-			  if (computerPlayer.compareTo("Black") == 0) value = 14000;
-			  else value = -14000;
-			}
-			else if (value == 0){ // if winner is white player
-			  if (computerPlayer.compareTo("White") == 0) value = 14000;
-			  else value = -14000;
-			}
-			else if (value == 0.5) value = 10; // if draw
-		   }
-		   else{
-			 //discs' parity function
-		     String playerColor = (computerPlayer.compareTo("Black") == 0?"White":"Black");
-			 double num1 = state.getNumberOfDiscs(computerPlayer);
-			 double num2 = state.getNumberOfDiscs(playerColor);
-			 value = 100*(num1 - num2)/(num1 + num2);
-			 //number of corners captured by players function
-			 double corn1 = state.getNumberOfCorners(computerPlayer);
-			 double corn2 = state.getNumberOfCorners(playerColor);	
-			 value += 80*(25*(corn1-corn2));
-			 //number of discs close to corners captured function
-			 double clcorn1 = state.getNumberOfDiscsCloseToCorners(computerPlayer);
-			 double clcorn2 = state.getNumberOfDiscsCloseToCorners(playerColor);
-			 value += 30*(-12.5*(clcorn1 - clcorn2));
-			 //discs' mobility function
-			 double mob1 = 0;
-			 double mob2 = 0;
-			 for (Action a : getActions(state, computerPlayer)) mob1 ++;
-			 for (Action a : getActions(state, playerColor)) mob2 ++;
-			 value += 8*(100*(mob1 - mob2)/(mob1 + mob2));
-			}
-		    return value;
-		 }
+	  double value = 0;
+	  if (isTerminal(state)){
+	    value = state.getUtility();
+		if (value == 1){ // if winner is black player
+		  if (computerPlayer.compareTo(TileStates.BLACK.name()) == 0) value = 14000;
+		  else value = -14000;
+		}
+		else if (value == 0){ // if winner is white player
+		  if (computerPlayer.compareTo(TileStates.WHITE.name()) == 0) value = 14000;
+		  else value = -14000;
+		}
+		else if (value == 0.5) value = 10; // if draw
+	   }
+	   else{
+		 //discs' parity function
+	     String playerColor = (computerPlayer.compareTo(TileStates.BLACK.name()) == 0 ? TileStates.WHITE.name() : TileStates.BLACK.name());
+		 double num1 = state.getNumberOfDiscs(computerPlayer);
+		 double num2 = state.getNumberOfDiscs(playerColor);
+		 value = 100*(num1 - num2)/(num1 + num2);
+		 //number of corners captured by players function
+		 double corn1 = state.getNumberOfCorners(computerPlayer);
+		 double corn2 = state.getNumberOfCorners(playerColor);	
+		 value += 80*(25*(corn1-corn2));
+		 //number of discs close to corners captured function
+		 double clcorn1 = state.getNumberOfDiscsCloseToCorners(computerPlayer);
+		 double clcorn2 = state.getNumberOfDiscsCloseToCorners(playerColor);
+		 value += 30*(-12.5*(clcorn1 - clcorn2));
+		 //discs' mobility function
+		 double mob1 = 0;
+		 double mob2 = 0;
+		 for (Action a : getActions(state, computerPlayer)) mob1 ++;
+		 for (Action a : getActions(state, playerColor)) mob2 ++;
+		 value += 8*(100*(mob1 - mob2)/(mob1 + mob2));
+		}
+	    return value;
+	 }
 }
