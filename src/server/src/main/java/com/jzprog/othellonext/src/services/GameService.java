@@ -53,7 +53,7 @@ public class GameService {
 	}
 
 	public void setCurrentMove(Action currentMove) {
-		setCompleted(validation.provideValidation(SystemMessages.ValidationTypes.MOVE_VALIDITY, gameState, currentMove)); // validate -> only when player turn
+		setCompleted(validation.provideValidation(SystemMessages.ValidationTypes.MOVE_VALIDITY, gameState, currentMove, getGameState())); // validate -> only when player turn
 		if (isCompleted().isSuccess()) this.currentMove = currentMove;
 	}
 	
