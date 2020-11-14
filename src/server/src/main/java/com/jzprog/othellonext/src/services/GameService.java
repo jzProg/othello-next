@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.context.annotation.ScopedProxyMode;
+
+import com.jzprog.othellonext.src.advices.LogMethodInfo;
 import com.jzprog.othellonext.src.model.Action;
 import com.jzprog.othellonext.src.model.StateInfo;
 import com.jzprog.othellonext.src.model.ValidationResponse;
@@ -52,8 +54,9 @@ public class GameService {
 		return currentMove;
 	}
 
+	@LogMethodInfo
 	public void setCurrentMove(Action currentMove) {
-		setCompleted(validation.provideValidation(SystemMessages.ValidationTypes.MOVE_VALIDITY, gameState, currentMove, getInfo())); // validate -> only when player turn
+		setCompleted(validation.provideValidation(SystemMessages.ValidationTypes.MOVE_VALIDITY, gameState, currentMove, getInfo().clone())); // validate -> only when player turn
 		if (isCompleted().isSuccess()) this.currentMove = currentMove;
 	}
 	
@@ -61,6 +64,7 @@ public class GameService {
 		return player;
 	}
 
+	@LogMethodInfo
 	public void setPlayer(TileStates player) {
 		setCompleted(validation.provideValidation(SystemMessages.ValidationTypes.SELECT_VALIDATION, gameState)); // validate -> only when initial
 		if (isCompleted().isSuccess()) this.player = player;
@@ -102,6 +106,7 @@ public class GameService {
 		return gameInfo;
 	}
 	
+	@LogMethodInfo
 	public void putDisc() {
 		Action move = getCurrentMove();
 		gameInfo.putDisc(move.getX(), move.getY());
@@ -119,5 +124,12 @@ public class GameService {
 		board[4][3] = TileStates.BLACK;
 		board[4][4] = TileStates.WHITE;
 		gameInfo = new StateInfo(board, TileStates.BLACK, -1);
+	}
+
+	@Override
+	public String toString() {
+		return "GameService [validation=" + validation + ", gameState=" + gameState + ", gameInfo=" + gameInfo
+				+ ", currentMove=" + currentMove + ", player=" + player + ", completed=" + completed + ", gameId="
+				+ gameId + "]";
 	}
 }

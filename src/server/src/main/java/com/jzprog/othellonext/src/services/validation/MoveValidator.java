@@ -43,11 +43,9 @@ public class MoveValidator implements ValidationService {
 	  } else if (state.getUtility() == -1 && state.isEmptySquare(move.getX(), move.getY())) {
 	     state.setPlayerToMove(move.getPlayerToMove());
 	     state.putDisc(move); //play the move
-	     boolean check = state.checkForFlip(move.getX(), move.getY());
+	     boolean check = true; // TODO change check implementation
 	     if (!check) {
-		  state.resetMove(move); //reset
 		  setErrorMessage(SystemMessages.NON_EMPTY_MOVE_ERROR);
-		  state.analyzeUtility();
 		  return false;
 		 }
 	  }

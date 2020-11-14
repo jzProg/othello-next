@@ -1,8 +1,11 @@
 package com.jzprog.othellonext.src.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.stereotype.Component;
+
+import com.jzprog.othellonext.src.advices.LogMethodInfo;
 import com.jzprog.othellonext.src.utils.SystemMessages.TileStates;
 
 @Component
@@ -34,7 +37,7 @@ public class StateInfo implements Cloneable {
 
 	//checks if the square in r,c position is empty
 	public boolean isEmptySquare(int r,int c){
-	  return othelloBoard[r][c].compareTo(TileStates.EMPTY) == 0;
+	  return othelloBoard[r][c].equals(TileStates.EMPTY);
 	}
 	
 	//returns the value of the square in r,c position
@@ -117,23 +120,23 @@ public class StateInfo implements Cloneable {
 	//returns the number of discs close to corners the given player has played
 	public int getNumberOfDiscsCloseToCorners(String player){
 		int num = 0;
-		if (othelloBoard[0][0].compareTo(TileStates.EMPTY) == 0){
+		if (othelloBoard[0][0].equals(TileStates.EMPTY)){
 			if (othelloBoard[0][1].name().compareTo(player.toUpperCase()) == 0) num++;
 			if (othelloBoard[1][1].name().compareTo(player.toUpperCase()) == 0) num++;
 			if (othelloBoard[1][0].name().compareTo(player.toUpperCase()) == 0) num++;
 		}
 		
-		if (othelloBoard[0][7].compareTo(TileStates.EMPTY) == 0){
+		if (othelloBoard[0][7].equals(TileStates.EMPTY)){
 			if (othelloBoard[0][6].name().compareTo(player.toUpperCase()) == 0) num++;				
 			if (othelloBoard[1][6].name().compareTo(player.toUpperCase()) == 0) num++;
 			if (othelloBoard[1][7].name().compareTo(player.toUpperCase()) == 0) num++;
 		}
-		if (othelloBoard[7][7].compareTo(TileStates.EMPTY) == 0){
+		if (othelloBoard[7][7].equals(TileStates.EMPTY)){
 			if (othelloBoard[6][7].name().compareTo(player.toUpperCase()) == 0) num++;
 			if (othelloBoard[6][6].name().compareTo(player.toUpperCase()) == 0) num++;
 			if (othelloBoard[7][6].name().compareTo(player.toUpperCase()) == 0) num++;
 		}
-		if (othelloBoard[7][0].compareTo(TileStates.EMPTY) == 0){
+		if (othelloBoard[7][0].equals(TileStates.EMPTY)){
 			if (othelloBoard[7][1].name().compareTo(player.toUpperCase()) == 0) num++;
 			if (othelloBoard[6][1].name().compareTo(player.toUpperCase()) == 0) num++;
 			if (othelloBoard[6][0].name().compareTo(player.toUpperCase()) == 0) num++;
@@ -149,11 +152,14 @@ public class StateInfo implements Cloneable {
 	  othelloBoard[action.getX()][action.getY()] = TileStates.EMPTY;
 	}
 	
+	
 	// puts a disc in the square in r,c position
+	@LogMethodInfo
 	public void putDisc(int r,int c){
 	  othelloBoard[r][c] = playerToMove;
 	  analyzeUtility(); //update utility
-	  playerToMove = (playerToMove.compareTo(TileStates.BLACK) == 0 ? TileStates.WHITE : TileStates.BLACK); // next player's turn
+	  checkForFlip(r, c);
+	  playerToMove = (playerToMove.equals(TileStates.BLACK) ? TileStates.WHITE : TileStates.BLACK); // next player's turn
 	}
 
 	//checks diagonal,vertical and horizontal if there is at least one disc for flipping and flips it
@@ -182,10 +188,10 @@ public class StateInfo implements Cloneable {
 		
 	// flips the disc in r,c position
 	private void flip(int r,int c){
-		 if (othelloBoard[r][c].compareTo(TileStates.BLACK) == 0){
+		 if (othelloBoard[r][c].equals(TileStates.BLACK)){
 			 othelloBoard[r][c] = TileStates.WHITE;
 		 }
-		 else if (othelloBoard[r][c].compareTo(TileStates.BLACK) == 0){
+		 else if (othelloBoard[r][c].equals(TileStates.WHITE)){
 			 othelloBoard[r][c] = TileStates.BLACK;
 		 }
 	}
@@ -201,10 +207,10 @@ public class StateInfo implements Cloneable {
 			if (g < 0){
 				break;
 			}
-			if(othelloBoard[g][i].compareTo(TileStates.EMPTY) == 0){
+			if(othelloBoard[g][i].equals(TileStates.EMPTY)){
 				break;
 			}
-			if(othelloBoard[g][i].compareTo(othelloBoard[r][c]) == 0){
+			if(othelloBoard[g][i].equals(othelloBoard[r][c])){
 				break;
 			}
 			else {
@@ -213,7 +219,7 @@ public class StateInfo implements Cloneable {
 			g--;
 		}
 		if (i == 8 || g == -1) list1.clear();
-		if (i != 8 && g != -1 && othelloBoard[g][i].compareTo(TileStates.EMPTY) == 0) list1.clear();
+		if (i != 8 && g != -1 && othelloBoard[g][i].equals(TileStates.EMPTY)) list1.clear();
 		}
 		List<Action> list2 = new ArrayList<Action>();
 		int j;
@@ -223,10 +229,10 @@ public class StateInfo implements Cloneable {
 			if (g2 >= 8){
 				break;
 			}
-			if(othelloBoard[g2][j].compareTo(TileStates.EMPTY) == 0){
+			if(othelloBoard[g2][j].equals(TileStates.EMPTY)){
 				break;
 			}
-			if(othelloBoard[g2][j].compareTo(othelloBoard[r][c]) == 0){
+			if(othelloBoard[g2][j].equals(othelloBoard[r][c])){
 				break;
 			}
 			else {
@@ -235,7 +241,7 @@ public class StateInfo implements Cloneable {
 			g2++;
 		}
 		if (j == -1 || g2 >= 8) list2.clear();
-		if (j != -1 && g2 != 8 && othelloBoard[g2][j].compareTo(TileStates.EMPTY) == 0) list2.clear();
+		if (j != -1 && g2 != 8 && othelloBoard[g2][j].equals(TileStates.EMPTY)) list2.clear();
 		}
 		List<Action> list3 = new ArrayList<Action>();
 		int k;
@@ -245,10 +251,10 @@ public class StateInfo implements Cloneable {
 			if (s >= 8){
 				break;
 			}
-			if(othelloBoard[k][s].compareTo(TileStates.EMPTY) == 0){
+			if(othelloBoard[k][s].equals(TileStates.EMPTY)){
 				break;
 			}
-			if(othelloBoard[k][s].compareTo(othelloBoard[r][c]) == 0){
+			if(othelloBoard[k][s].equals(othelloBoard[r][c])){
 				break;
 			}
 			else {
@@ -257,7 +263,7 @@ public class StateInfo implements Cloneable {
 			s++;
 		}
 		if (k == 8 || s == 8)  list3.clear();
-		if (k != 8 && s != 8 && othelloBoard[k][s].compareTo(TileStates.EMPTY) == 0) list3.clear();
+		if (k != 8 && s != 8 && othelloBoard[k][s].equals(TileStates.EMPTY)) list3.clear();
 		}
 		List<Action> list4 = new ArrayList<Action>();
 		int l;
@@ -267,10 +273,10 @@ public class StateInfo implements Cloneable {
 			if (s2 < 0){
 				break;
 			}
-			if(othelloBoard[l][s2].compareTo(TileStates.EMPTY) == 0){
+			if(othelloBoard[l][s2].equals(TileStates.EMPTY)){
 				break;
 			}
-			if(othelloBoard[l][s2].compareTo(othelloBoard[r][c]) == 0){
+			if(othelloBoard[l][s2].equals(othelloBoard[r][c])){
 				break;
 			}
 			else {
@@ -279,7 +285,7 @@ public class StateInfo implements Cloneable {
 			s2--;
 		}
 		if (l == -1 || s2 ==-1) list4.clear();
-		if (l != -1 && s2 != -1 && othelloBoard[l][s2].compareTo(TileStates.EMPTY) == 0) list4.clear();
+		if (l != -1 && s2 != -1 && othelloBoard[l][s2].equals(TileStates.EMPTY)) list4.clear();
 		
 		}
 		for (Action a : list1) list.add(a);
@@ -295,33 +301,33 @@ public class StateInfo implements Cloneable {
 		List<Action> list1 = new ArrayList<Action>();
 		int i;
 		for( i = r+1;i<8;i++){
-			if(othelloBoard[i][c].compareTo(TileStates.EMPTY) == 0){
+			if(othelloBoard[i][c].equals(TileStates.EMPTY)){
 				break;
 			}
-			if(othelloBoard[i][c].compareTo(othelloBoard[r][c]) == 0){
+			if(othelloBoard[i][c].equals(othelloBoard[r][c])){
 				break;
 			}
 			else {
 				list1.add(new Action(i,c));
 			}
 		}
-		if (i == 8 && othelloBoard[i-1][c].compareTo(othelloBoard[r][c]) != 0) list1.clear();
-		if (i != 8 && othelloBoard[i][c].compareTo(TileStates.EMPTY) == 0) list1.clear();
+		if (i == 8 && !othelloBoard[i-1][c].equals(othelloBoard[r][c])) list1.clear();
+		if (i != 8 && othelloBoard[i][c].equals(TileStates.EMPTY)) list1.clear();
 		List<Action> list2 = new ArrayList<Action>();
 		int j;
 		for(j = r-1;j>=0;j--){
-			if(othelloBoard[j][c].compareTo(TileStates.EMPTY) == 0){
+			if(othelloBoard[j][c].equals(TileStates.EMPTY)){
 				break;
 			}
-			if(othelloBoard[j][c].compareTo(othelloBoard[r][c]) == 0){
+			if(othelloBoard[j][c].equals(othelloBoard[r][c])){
 				break;
 			}
 			else {
 				list2.add(new Action(j,c));
 			}
 		}
-		if (j == -1 && othelloBoard[0][c].compareTo(othelloBoard[r][c]) != 0) list2.clear();
-		if (j != -1 && othelloBoard[j][c].compareTo(TileStates.EMPTY) == 0) list2.clear();
+		if (j == -1 && !othelloBoard[0][c].equals(othelloBoard[r][c])) list2.clear();
+		if (j != -1 && othelloBoard[j][c].equals(TileStates.EMPTY)) list2.clear();
 		for (Action a : list1) list.add(a);
 		for (Action a : list2) list.add(a);
 		return list;	
@@ -333,33 +339,33 @@ public class StateInfo implements Cloneable {
 		List<Action> list1 = new ArrayList<Action>();
 		int i;
 		for( i = c+1;i<8;i++){
-			if(othelloBoard[r][i].compareTo(TileStates.EMPTY) == 0){
+			if(othelloBoard[r][i].equals(TileStates.EMPTY)){
 				break;
 			}
-			if(othelloBoard[r][i].compareTo(othelloBoard[r][c]) == 0){
+			if(othelloBoard[r][i].equals(othelloBoard[r][c])){
 				break;
 			}
 			else {
 				list1.add(new Action(r,i));
 			}
 		}
-		if (i == 8 && othelloBoard[r][i-1].compareTo(othelloBoard[r][c]) != 0) list1.clear();
-		if (i != 8 && othelloBoard[r][i].compareTo(TileStates.EMPTY) == 0) list1.clear();
+		if (i == 8 && !othelloBoard[r][i-1].equals(othelloBoard[r][c])) list1.clear();
+		if (i != 8 && othelloBoard[r][i].equals(TileStates.EMPTY)) list1.clear();
 		List<Action> list2 = new ArrayList<Action>();
 		int j;
 		for(j = c-1;j>=0;j--){
-			if(othelloBoard[r][j].compareTo(TileStates.EMPTY) == 0){
+			if(othelloBoard[r][j].equals(TileStates.EMPTY)){
 				break;
 			}
-			if(othelloBoard[r][j].compareTo(othelloBoard[r][c]) == 0){
+			if(othelloBoard[r][j].equals(othelloBoard[r][c])){
 				break;
 			}
 			else {
 				list2.add(new Action(r,j));
 			}
 		}
-		if (j == -1 && othelloBoard[r][0].compareTo(othelloBoard[r][c]) != 0) list2.clear();
-		if (j != -1 && othelloBoard[r][j].compareTo(TileStates.EMPTY) == 0) list2.clear();
+		if (j == -1 && !othelloBoard[r][0].equals(othelloBoard[r][c])) list2.clear();
+		if (j != -1 && othelloBoard[r][j].equals(TileStates.EMPTY)) list2.clear();
 		for (Action a : list1) list.add(a);
 		for (Action a : list2) list.add(a);
 		return list;		
@@ -385,20 +391,28 @@ public class StateInfo implements Cloneable {
 	
 	//checks if the given player has moves to play
 	public boolean canPlay(String player){
-			boolean flag = false;
-			for(int i=0;i<8;i++){
-				for(int j=0;j<8;j++){
-					if(othelloBoard[i][j].compareTo(TileStates.EMPTY)== 0){
-						othelloBoard[i][j] = TileStates.valueOf(player.toUpperCase());
-						if(checkForMatches(i,j)){
-							flag = true;
-							othelloBoard[i][j] = TileStates.EMPTY;
-							break;
-						}
+		boolean flag = false;
+		for(int i=0;i<8;i++){
+			for(int j=0;j<8;j++){
+				if(othelloBoard[i][j].equals(TileStates.EMPTY)){
+					othelloBoard[i][j] = TileStates.valueOf(player.toUpperCase());
+					if(checkForMatches(i,j)){
+						flag = true;
 						othelloBoard[i][j] = TileStates.EMPTY;
+						break;
 					}
+					othelloBoard[i][j] = TileStates.EMPTY;
 				}
 			}
-			return flag;
 		}
+		return flag;
+	}
+
+	@Override
+	public String toString() {
+		return "StateInfo [playerToMove=" + playerToMove + ", othelloBoard=" + Arrays.toString(othelloBoard)
+				+ ", utility=" + utility + "]";
+	}
+	
+	
 }
