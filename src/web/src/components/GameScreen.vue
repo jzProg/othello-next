@@ -15,7 +15,7 @@
     </div>
     <Options v-if="showOptions" :options="options" @select="choose" @close="choose" />
     <template v-else>
-      <GameBoard :gameId="gameId" />
+      <GameBoard :gameId="gameId" :board="board" @played="onPlayed"/>
       <TextUI :messages="msgs" />
     </template>
   </div>
@@ -39,13 +39,22 @@
           WHITE: 0
         },
         options: [ 'BLACK', 'WHITE'],
-        player: 'Black',
+        player: 'black',
+        board: [],
       }
     },
     created() {
-      this.init();
+     this.init();
     },
     methods: {
+      onPlayed(result) {
+        // eslint-disable-next-line
+        const { gameMessage, moveX, moveY, playerToMove, board }  = result;
+        this.msgs.push(gameMessage);
+        this.player = playerToMove.toLowerCase();
+        this.board = board;
+        // TODO handle AI move
+      },
       choose(color) {
         this.axios.get(`/api/game/choose`, { params: { playerColor: color || this.options[0], gameId: this.gameId }}).then((response) => {
           this.showOptions = false;
@@ -54,8 +63,11 @@
       },
       init() {
         this.axios.get(`/api/game/startNewGame`).then((response) => {
-          this.gameId = response.data.gameId;
-          this.msgs.push(response.data.gameMessage);
+          const { gameId, gameMessage, playerToMove, board }  = response.data;
+          this.gameId = gameId;
+          this.board = board;
+          this.player = playerToMove.toLowerCase();
+          this.msgs.push(gameMessage);
           this.showOptions = true;
         })
       },

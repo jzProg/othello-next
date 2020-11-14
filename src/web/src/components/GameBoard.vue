@@ -3,7 +3,9 @@
       <div id="gameDiv" class="text-center">
         <table style='width:600px;margin: 0 auto;margin-top: 5%'>
           <tr v-for="row in 8" :key="row">
-            <td v-for="column in 8" class="pieceBox" :key="column"/>
+            <td v-for="column in 8" class="pieceBox" :key="column">
+              <i @click.prevent="play(row - 1, column - 1)" class="fas fa-circle fa-4x" :style="{ color: getPlayerColor(row - 1, column - 1) }"/>
+            </td>
             <td class="numberBox">
               <h3><b>{{ row }}</b></h3>
             </td>
@@ -21,20 +23,29 @@
 <script>
   export default {
     name: 'GameBoard',
-    props: ['gameId'],
+    props: ['gameId', 'board'],
     data() {
       return {
-        letters: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+        colorPerState: {
+          EMPTY: 'green',
+          WHITE: 'white',
+          BLACK: 'black'
+        },
+        letters: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
       }
     },
-    created() {
-    },
     methods: {
-      play() {
-        this.axios.get(`/api/game/play`, { params: { moveX: 1, moveY: 2, gameId: this.gameId }}).then((response) => {
-          this.msgs.push(response.data.gameMessage);
-        })
+      play(x, y) {
+        this.axios.get(`/api/game/play`, { params: { moveX: x, moveY: y, gameId: this.gameId }}).then((response) => {
+          this.$emit('played', response.data);
+        });
       },
+      getPlayerColor(x, y) {
+        if (!this.board[x] || !this.board[x][y]) {
+          return this.colorPerState.EMPTY;
+        }
+        return this.colorPerState[this.board[x][y]];
+      }
     }
   }
 </script>
@@ -51,6 +62,11 @@
     width: 150px;
     border-style: solid;
     border-color: white;
+    cursor: pointer;
+  }
+
+  .pieceBox:hover {
+    opacity: 0.5
   }
 
   .letterBox {

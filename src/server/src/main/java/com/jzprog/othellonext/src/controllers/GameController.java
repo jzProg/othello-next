@@ -34,6 +34,8 @@ public class GameController {
 		GameDTO gameDTO = new GameDTO();
 		gameDTO.setGameId(gameId);
 		gameDTO.setGameMessage(INIT_GAME_SUCCESS);
+		gameDTO.setBoard(gameService.getBoard());
+		gameDTO.setPlayerToMove(gameService.getInfo().getPlayerToMove());
 		return new ResponseEntity<>(gameDTO, HttpStatus.OK);
 	}
 	
@@ -45,6 +47,7 @@ public class GameController {
     		gameService.play();
     		gameService.nextState();
     		stateDTO.setGameMessage(String.format(MoveResults.VALID_MOVE.getText(), stateDTO.getMoveX(), stateDTO.getMoveY()));
+    		stateDTO.setPlayerToMove(gameService.getInfo().getPlayerToMove());
     		stateDTO.setBoard(gameService.getBoard());
     		return new ResponseEntity<>(stateDTO, HttpStatus.OK);
     	}

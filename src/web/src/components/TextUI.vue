@@ -1,7 +1,8 @@
 <template>
   <div class="textContainer row">
       <div class="text-center">
-        <p v-for="(mes, index) in messages" :key="index">{{ mes }} </p>
+        <p v-for="(mes, index) in messages" :key="index">
+          <i style="color: green"> {{ new Date().toLocaleTimeString() }}</i> {{ mes }} </p>
       </div>
   </div>
 </template>
