@@ -4,8 +4,8 @@
         <div id="titleDiv" class="col-md-3" style="color: lightblue;">Othello Riversi</div>
         <div id="turnDiv" class="col-md-3 text-center" v-show="!showOptions">{{ player }} player</div>
         <div id="scoreDiv" class="col-md-3 text-center" v-show="!showOptions" style="color: white">
-          <i class="fas fa-circle" style="borderColor: white; border-radius:20px; border-style:solid; color: black"/> {{ score.BLACK }}
-          <i class="fas fa-circle" style="borderColor: white; border-radius:20px; border-style:solid; color: white"/> {{ score.WHITE }}
+          <i class="fas fa-circle" style="borderColor: white; border-radius:20px; border-style:solid; color: black"/> {{ getScore[0] }}
+          <i class="fas fa-circle" style="borderColor: white; border-radius:20px; border-style:solid; color: white"/> {{ getScore[1] }}
         </div>
         <div id="resetDiv" class="col-md-3 text-center" v-show="!showOptions">
           <a @click.prevent="reset()" class="reset">
@@ -34,10 +34,6 @@
         msgs: [],
         gameId: null,
         showOptions: false,
-        score: {
-          BLACK: 0,
-          WHITE: 0
-        },
         options: [ 'BLACK', 'WHITE'],
         player: 'black',
         board: [],
@@ -72,8 +68,16 @@
         })
       },
       reset() {
-        this.msgs = []
+        this.msgs = [];
         this.init();
+      }
+    },
+    computed: {
+      getScore() {
+        const flatArray = this.board.flatMap(x => x.filter(a => a !== 'EMPTY'));
+        const blackCount = flatArray.filter(a => a === 'BLACK').length;
+        const whiteCount = flatArray.length - blackCount;
+        return [blackCount, whiteCount];
       }
     }
   }
@@ -123,17 +127,5 @@
     color: red;
     text-decoration: none;
     cursor: pointer;
-  }
-
-  h3 {
-    margin: 40px 0 0;
-  }
-  ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  li {
-    display: inline-block;
-    margin: 0 10px;
   }
 </style>
