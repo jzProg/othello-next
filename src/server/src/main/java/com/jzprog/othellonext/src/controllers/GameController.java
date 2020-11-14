@@ -44,7 +44,7 @@ public class GameController {
     	if (gameService.isCompleted().isSuccess()) {
     		gameService.play();
     		gameService.nextState();
-    		stateDTO.setGameMessage(MoveResults.VALID_MOVE.name());
+    		stateDTO.setGameMessage(String.format(MoveResults.VALID_MOVE.getText(), stateDTO.getMoveX(), stateDTO.getMoveY()));
     		return new ResponseEntity<>(stateDTO, HttpStatus.OK);
     	}
 		return new ResponseEntity<>(gameService.isCompleted().getErrorMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

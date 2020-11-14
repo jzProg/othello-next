@@ -3,8 +3,9 @@ package com.jzprog.othellonext.src.model;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StateDTO {
-	
+public class GameDTO {
+	private int gameId;
+	private String gameMessage;
 	private int moveX;
 	private int moveY;
 	private String playerColor;
@@ -32,11 +33,28 @@ public class StateDTO {
 	public void setPlayerColor(String playerColor) {
 		this.playerColor = playerColor;
 	}
+	
+	
+
+	public int getGameId() {
+		return gameId;
+	}
+
+	public void setGameId(int gameId) {
+		this.gameId = gameId;
+	}
+
+	public String getGameMessage() {
+		return gameMessage;
+	}
+
+	public void setGameMessage(String gameMessage) {
+		this.gameMessage = gameMessage;
+	}
 
 	@Override
 	public String toString() {
-		return "StateDTO [moveX=" + moveX + ", moveY=" + moveY + ", playerColor=" + playerColor + "]";
-	}  
-	
-	
+		return "GameDTO [gameId=" + gameId + ", gameMessage=" + gameMessage + ", moveX=" + moveX + ", moveY=" + moveY
+				+ ", playerColor=" + playerColor + "]";
+	}	
 }

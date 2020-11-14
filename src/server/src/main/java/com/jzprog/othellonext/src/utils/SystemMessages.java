@@ -31,9 +31,19 @@ public class SystemMessages {
 	}
     
     public enum MoveResults {
-		INVALID_MOVE,
-		VALID_MOVE,
-		WINNING_MOVE,
-		LOSING_MOVE
+		INVALID_MOVE("Invalid Move!Try Again!"),
+		VALID_MOVE("You played (%s,%s)"),
+		WINNING_MOVE("You won the game!"),
+		LOSING_MOVE("You lost the game...");
+    	
+    	private String text;
+    	
+    	MoveResults(String text) {
+    		this.text = text;
+    	}
+    	
+    	public String getText() {
+    		return text;
+    	}
 	}
 }
