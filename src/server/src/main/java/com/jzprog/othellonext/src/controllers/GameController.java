@@ -45,8 +45,21 @@ public class GameController {
     		gameService.play();
     		gameService.nextState();
     		stateDTO.setGameMessage(String.format(MoveResults.VALID_MOVE.getText(), stateDTO.getMoveX(), stateDTO.getMoveY()));
+    		stateDTO.setBoard(gameService.getBoard());
     		return new ResponseEntity<>(stateDTO, HttpStatus.OK);
     	}
+		return new ResponseEntity<>(gameService.isCompleted().getErrorMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ControllerAdvice
+    @GetMapping(AI_MOVE_ENDPOINT)
+	public ResponseEntity<?> getAIMove(@RequestParam("gameId") String gameId, GameDTO stateDTO) {
+		gameService.play(); // AI move
+		Action AIMove = gameService.getCurrentMove();
+		stateDTO.setMoveX(AIMove.getX());
+		stateDTO.setMoveY(AIMove.getY());
+		stateDTO.setPlayerToMove(gameService.getInfo().getPlayerToMove());
+		stateDTO.setBoard(gameService.getBoard());
 		return new ResponseEntity<>(gameService.isCompleted().getErrorMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
     

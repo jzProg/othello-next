@@ -1,6 +1,10 @@
 package com.jzprog.othellonext.src.model;
 
+import java.util.Arrays;
+
 import org.springframework.stereotype.Component;
+
+import com.jzprog.othellonext.src.utils.SystemMessages.TileStates;
 
 @Component
 public class GameDTO {
@@ -9,6 +13,8 @@ public class GameDTO {
 	private int moveX;
 	private int moveY;
 	private String playerColor;
+	private String playerToMove;
+	private TileStates[][] board;
 	
 	public int getMoveX() {
 		return moveX;
@@ -33,8 +39,6 @@ public class GameDTO {
 	public void setPlayerColor(String playerColor) {
 		this.playerColor = playerColor;
 	}
-	
-	
 
 	public int getGameId() {
 		return gameId;
@@ -52,9 +56,26 @@ public class GameDTO {
 		this.gameMessage = gameMessage;
 	}
 
+	public String getPlayerToMove() {
+		return playerToMove;
+	}
+
+	public void setPlayerToMove(String playerToMove) {
+		this.playerToMove = playerToMove;
+	}
+
+	public TileStates[][] getBoard() {
+		return board;
+	}
+
+	public void setBoard(TileStates[][] board) {
+		this.board = board;
+	}
+
 	@Override
 	public String toString() {
 		return "GameDTO [gameId=" + gameId + ", gameMessage=" + gameMessage + ", moveX=" + moveX + ", moveY=" + moveY
-				+ ", playerColor=" + playerColor + "]";
-	}	
+				+ ", playerColor=" + playerColor + ", playerToMove=" + playerToMove + ", board="
+				+ Arrays.toString(board) + "]";
+	}
 }
