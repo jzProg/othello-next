@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.jzprog.othellonext.src.advices.ControllerAdvice;
 import com.jzprog.othellonext.src.model.Action;
-import com.jzprog.othellonext.src.model.StateDTO;
+import com.jzprog.othellonext.src.model.GameDTO;
 import com.jzprog.othellonext.src.services.GameService;
 
 import static com.jzprog.othellonext.src.utils.SystemMessages.*;
@@ -31,17 +31,21 @@ public class GameController {
 		if (!gameService.isCompleted().isSuccess()) {
 			return new ResponseEntity<>(gameService.isCompleted().getErrorMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<>(gameId, HttpStatus.OK);
+		GameDTO gameDTO = new GameDTO();
+		gameDTO.setGameId(gameId);
+		gameDTO.setGameMessage(INIT_GAME_SUCCESS);
+		return new ResponseEntity<>(gameDTO, HttpStatus.OK);
 	}
 	
 	@ControllerAdvice
     @GetMapping(PLAY_MOVE_ENDPOINT)
-	public ResponseEntity<?> play(@RequestParam("gameId") String gameId, StateDTO stateDTO) {
+	public ResponseEntity<?> play(@RequestParam("gameId") String gameId, GameDTO stateDTO) {
     	gameService.setCurrentMove(new Action(stateDTO.getMoveX(), stateDTO.getMoveY(), gameService.getPlayer()));
     	if (gameService.isCompleted().isSuccess()) {
     		gameService.play();
     		gameService.nextState();
-    		return new ResponseEntity<>(MoveResults.VALID_MOVE, HttpStatus.OK);
+    		stateDTO.setGameMessage(MoveResults.VALID_MOVE.name());
+    		return new ResponseEntity<>(stateDTO, HttpStatus.OK);
     	}
 		return new ResponseEntity<>(gameService.isCompleted().getErrorMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
@@ -49,11 +53,13 @@ public class GameController {
 
 	@ControllerAdvice
     @GetMapping(SELECT_TURN_ENDPOINT)
-	public ResponseEntity<?> choose(@RequestParam("gameId") String gameId, StateDTO stateDTO) {
-    	gameService.setPlayer(TileStates.valueOf(stateDTO.getPlayerColor()));
+	public ResponseEntity<?> choose(@RequestParam("gameId") String gameId, GameDTO stateDTO) {
+		TileStates color = TileStates.valueOf(stateDTO.getPlayerColor());
+    	gameService.setPlayer(color);
     	if (gameService.isCompleted().isSuccess()) {
     		gameService.nextState();
-    		return new ResponseEntity<>(INIT_GAME_SUCCESS, HttpStatus.OK);
+    		stateDTO.setGameMessage(color.equals(TileStates.BLACK) ? PLAY_FIRST_MESSAGE : PLAY_AI_MESSAGE);
+    		return new ResponseEntity<>(stateDTO, HttpStatus.OK);
     	}
     	return new ResponseEntity<>(gameService.isCompleted().getErrorMessage(), HttpStatus.FORBIDDEN);	
 	}

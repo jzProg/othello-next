@@ -14,6 +14,8 @@ public class SystemMessages {
 	public static final String INVALID_MOVE_ERROR = "Invalid Move or on other player's turn...";
 	public static final String NON_EMPTY_MOVE_ERROR = "Invalid Move!Try Again!";
 	public static final String NO_AVAILABLE_MOVE_ERROR = "%s cannot play! Next Player's Turn!";
+	public static final String PLAY_FIRST_MESSAGE = "You play First!";
+	public static final String PLAY_AI_MESSAGE = "AI player's turn!";
 
 
 	public enum ValidationTypes {
