@@ -37,7 +37,7 @@ public class GameController {
 	@ControllerAdvice
     @GetMapping(PLAY_MOVE_ENDPOINT)
 	public ResponseEntity<?> play(@RequestParam("gameId") String gameId, StateDTO stateDTO) {
-    	gameService.setCurrentMove(new Action(stateDTO.getMoveX(), stateDTO.getMoveY(), TileStates.valueOf(stateDTO.getPlayerColor())));
+    	gameService.setCurrentMove(new Action(stateDTO.getMoveX(), stateDTO.getMoveY(), gameService.getPlayer()));
     	if (gameService.isCompleted().isSuccess()) {
     		gameService.play();
     		gameService.nextState();

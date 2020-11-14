@@ -30,4 +30,10 @@ public class ValidationResponse {
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
+
+	@Override
+	public String toString() {
+		return "ValidationResponse [isSuccess=" + isSuccess + ", errorMessage=" + errorMessage + "]";
+	}
+	
 }
