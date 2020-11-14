@@ -55,7 +55,7 @@
       init() {
         this.axios.get(`/api/game/startNewGame`).then((response) => {
           this.gameId = response.data.gameId;
-          this.msgs.push(`A new Game started!`);
+          this.msgs.push(response.data.gameMessage);
           this.showOptions = true;
         })
       },
