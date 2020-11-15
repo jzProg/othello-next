@@ -8,12 +8,15 @@ public class AITurnState implements GameState {
 	@Override
 	public void makeMove(GameService game) {
 		game.putDisc();
-		game.checkNextPlayerAvailability();
 	}
 
 	@Override
 	public void next(GameService game) {
-		GameState nextState = game.isTerminal() ?  new EndState() : new PlayerTurnState();
+		boolean hasNormalTransition = game.checkNextPlayerAvailability();
+		GameState nextState = hasNormalTransition ?  new PlayerTurnState() : new AITurnState();
+		if (game.isTerminal()) {
+			nextState = new EndState();
+		}
 		game.setGameState(nextState);	
 	}
 }

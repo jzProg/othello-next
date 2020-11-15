@@ -7,7 +7,7 @@
       <TextUI :messages="msgs" />
     </template>
     <ErrorModal v-if="showError" :message="msgs[msgs.length - 1]" @close="onErrorConfirm" />
-    <PostGame v-if="gameFinished" :message="msgs[msgs.length - 1]" @play="reset" />
+    <PostGame v-if="gameFinished" :message="msgs[msgs.length - 1]" @retry="reset" />
   </div>
 </template>
 
@@ -48,7 +48,7 @@
       },
       onPlayed(response) {
         this.availableMoves = [];
-        const { gameMessage, playerToMove, board, score, result }  = response;
+        const { gameMessage, playerToMove, board, score, result, availableMoves }  = response;
         this.msgs.push(gameMessage);
         this.player = playerToMove.toLowerCase();
         this.board = board;
@@ -56,7 +56,10 @@
         if (result) {
           this.gameFinished = true;
           this.msgs.push(result);
-        } else this.getAIMove();
+        }
+        if (!this.gameFinished && availableMoves.length) {
+          this.getAIMove(); // if no available moves for the user, AI plays again
+        }
       },
       onErrorConfirm() {
         this.showError = false;
@@ -83,7 +86,7 @@
               }
               if (!this.gameFinished && !availableMoves.length) {
                 this.getAIMove(); // if no available moves for the user, AI plays again
-              }  
+              }
           }).catch((error) => {
             this.onError(error.response.data);
           });

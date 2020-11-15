@@ -45,6 +45,7 @@ public class GameController {
     		gameService.nextState();
     		stateDTO.setGameMessage(String.format(MoveResults.VALID_MOVE.getText(), stateDTO.getMoveX(), stateDTO.getMoveY()));
     		stateDTO.setPlayerToMove(gameService.getInfo().getPlayerToMove());
+    		stateDTO.setAvailableMoves(gameService.getInfo().getAvailableMoves());
     		stateDTO.setBoard(gameService.getBoard());
     		stateDTO.setScore(gameService.getInfo().getScore());
     		if (gameService.isTerminal()) stateDTO.setResult(gameService.getResult().getText());
