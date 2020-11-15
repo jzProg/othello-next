@@ -1,8 +1,5 @@
 package com.jzprog.othellonext.src.services;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.jzprog.othellonext.src.advices.LogMethodInfo;
@@ -21,58 +18,40 @@ public class MinMaxSearch  {
 
 	@LogMethodInfo
 	public Action makeDecision(StateInfo state){
-		  int temp_depth = depth;
-		  Action result = null;
-		  double resultValue = Double.NEGATIVE_INFINITY;
-		  String player = getPlayer(state);
-		  for (Action action : getActions(state,player)){ // for every available move
-			double value = minValue(getResult(state, action),Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-			if (value > resultValue) { // find the max of children's values
-			  result = action;
-			  resultValue = value;
-			}
-			depth = temp_depth;
-		   }
-		   return result;
+	  computerPlayer = state.getPlayerToMove();
+	  int temp_depth = depth;
+	  Action result = null;
+	  double resultValue = Double.NEGATIVE_INFINITY;
+	  for (Action action : state.getAvailableMoves()){ // for every available move
+		double value = minValue(getResult(state, action),Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+		if (value > resultValue) { // find the max of children's values
+		  result = action;
+		  resultValue = value;
+		}
+		depth = temp_depth;
+	   }
+	   if (result != null) result.setPlayerToMove(TileStates.valueOf(computerPlayer));
+	   return result;
     }
 	
-	//returns player's valid available moves starting from the given state 
-	List<Action> getActions(StateInfo state,String player){ 
-	    List<Action> list = new ArrayList<Action>();
-		for(Action a:state.getEmptySquares()){
-		  state.setSquareValue(a.getX(), a.getY(),player);
-		  if(state.checkForMatches(a.getX(), a.getY())){
-			list.add(a);
-		  }
-		  state.setSquareValue(a.getX(), a.getY(),TileStates.EMPTY.name());
-		}
-		return list;
-	 }
-	  
-	//returns the player who is about to move
-	public String getPlayer(StateInfo state){
-	   return state.getPlayerToMove();
-	}
-	
 	//returns the state-result after performing the given action on the given state
-	public StateInfo getResult(StateInfo state, Action action){
+	private StateInfo getResult(StateInfo state, Action action){
 	  StateInfo result = state.clone();
       result.putDisc(action);
 	  return result;
 	}
 	  
 	//checks if the given state is a terminal state of the game
-	public boolean isTerminal(StateInfo state){
+	private boolean isTerminal(StateInfo state){
 	  return state.getUtility() != -1;
 	}
 	
 	//finds the maximum value of given state's children values
 	private double maxValue(StateInfo state,double alpha,double beta){ 
 	  depth--;
-	  String player = getPlayer(state);
 	  if (isTerminal(state) || depth <= 0) return heuristicFunctionValue(state);
 	  double value = Double.NEGATIVE_INFINITY;
-	  for (Action  action :getActions(state,player)){
+	  for (Action  action : state.getAvailableMoves()){
 		value = Math.max(value,minValue(getResult(state, action),alpha,beta));
 		if (value >= beta) return value;
 		alpha = Math.max(alpha, value);
@@ -83,10 +62,9 @@ public class MinMaxSearch  {
 	//finds the minimum value of given state's children values
 	private double minValue(StateInfo state,double alpha,double beta){ 
 	  depth--;
-	  String player = getPlayer(state);	
 	  if (isTerminal(state) || depth <= 0)	return heuristicFunctionValue(state);
 	  double value = Double.POSITIVE_INFINITY;
-	  for (Action action : getActions(state,player)){
+	  for (Action action : state.getAvailableMoves()){
 		value = Math.min(value,maxValue(getResult(state, action),alpha,beta));
 		if (value <= alpha) return value;
 		beta = Math.min(beta, value);
@@ -95,23 +73,28 @@ public class MinMaxSearch  {
 	 }
 
 	//produce a value for the given state depending on various factors such as disc parity and mobility
-	private double heuristicFunctionValue(StateInfo state){
+	private double heuristicFunctionValue(StateInfo state) {
 	  double value = 0;
-	  if (isTerminal(state)){
-	    value = state.getUtility();
-		if (value == 1){ // if winner is black player
-		  if (computerPlayer.compareTo(TileStates.BLACK.name()) == 0) value = 14000;
-		  else value = -14000;
-		}
-		else if (value == 0){ // if winner is white player
-		  if (computerPlayer.compareTo(TileStates.WHITE.name()) == 0) value = 14000;
-		  else value = -14000;
-		}
-		else if (value == 0.5) value = 10; // if draw
+	  if (isTerminal(state)) {
+	     value = state.getUtility();
+		 String winnerColor = value == 1 ? TileStates.BLACK.name() : value == 0 ? TileStates.WHITE.name() : "";
+		 if (winnerColor.equals("")) { // draw
+			value = 10;
+		 } else if (computerPlayer.equals(winnerColor)) { // if computer won
+			value = 14000;	
+		 } else { // player won
+			value = -14000;
+		 }
 	   }
-	   else{
-		 //discs' parity function
-	     String playerColor = (computerPlayer.compareTo(TileStates.BLACK.name()) == 0 ? TileStates.WHITE.name() : TileStates.BLACK.name());
+	   else {
+		 value = applyDiscParity(state, value);
+	   }
+	   return value;
+	 }
+	
+	 // discs' parity function
+	 private double applyDiscParity(StateInfo state, double value) {
+		 String playerColor = state.getOpponentColor(TileStates.valueOf(computerPlayer)).name();
 		 double num1 = state.getNumberOfDiscs(computerPlayer);
 		 double num2 = state.getNumberOfDiscs(playerColor);
 		 value = 100*(num1 - num2)/(num1 + num2);
@@ -126,10 +109,16 @@ public class MinMaxSearch  {
 		 //discs' mobility function
 		 double mob1 = 0;
 		 double mob2 = 0;
-		 for (Action a : getActions(state, computerPlayer)) mob1 ++;
-		 for (Action a : getActions(state, playerColor)) mob2 ++;
+		 if (playerColor.equals(state.getPlayerToMove())) {
+			 mob1 = state.getAvailableMoves().size();
+			 state.setPlayerToMove(TileStates.valueOf(computerPlayer));
+			 mob2 = state.calculateAvailableMoves().size();
+		 } else {
+			 mob2 = state.getAvailableMoves().size();
+			 state.setPlayerToMove(TileStates.valueOf(playerColor));
+			 mob1 = state.calculateAvailableMoves().size();
+		 }
 		 value += 8*(100*(mob1 - mob2)/(mob1 + mob2));
-		}
-	    return value;
+		 return value;
 	 }
 }

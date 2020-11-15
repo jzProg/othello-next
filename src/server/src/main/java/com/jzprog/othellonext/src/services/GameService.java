@@ -18,7 +18,10 @@ import com.jzprog.othellonext.src.utils.SystemMessages.TileStates;
 public class GameService {
 	
 	@Autowired
-	ValidationStrategy validation;
+	private ValidationStrategy validation;
+	
+	@Autowired
+	private MinMaxSearch minMax;
     
 	private GameState gameState;
 	private StateInfo gameInfo;
@@ -56,7 +59,7 @@ public class GameService {
 
 	@LogMethodInfo
 	public void setCurrentMove(Action currentMove) {
-		setCompleted(validation.provideValidation(SystemMessages.ValidationTypes.MOVE_VALIDITY, gameState, currentMove, getInfo().clone())); // validate -> only when player turn
+		setCompleted(validation.provideValidation(SystemMessages.ValidationTypes.MOVE_VALIDITY, gameState, currentMove, getInfo().clone(), getPlayer())); // validate -> only when player turn
 		if (isCompleted().isSuccess()) this.currentMove = currentMove;
 	}
 	
@@ -110,6 +113,10 @@ public class GameService {
 	public void putDisc() {
 		Action move = getCurrentMove();
 		gameInfo.putDisc(move.getX(), move.getY());
+	}
+	
+	public void makeDecision() {
+		setCurrentMove(minMax.makeDecision(getInfo().clone()));
 	}
 
 	protected void initBoard() {

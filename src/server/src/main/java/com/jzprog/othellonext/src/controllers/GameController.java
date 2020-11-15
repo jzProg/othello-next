@@ -1,6 +1,6 @@
 package com.jzprog.othellonext.src.controllers;
 
-import java.util.logging.Logger;
+import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +18,7 @@ import static com.jzprog.othellonext.src.utils.SystemMessages.*;
 @RestController
 @RequestMapping("/api/game")
 public class GameController {
-	
-    Logger log = Logger.getLogger(GameController.class.getName());
-    
+	    
 	@Autowired
 	private GameService gameService;
 
@@ -49,6 +47,7 @@ public class GameController {
     		stateDTO.setGameMessage(String.format(MoveResults.VALID_MOVE.getText(), stateDTO.getMoveX(), stateDTO.getMoveY()));
     		stateDTO.setPlayerToMove(gameService.getInfo().getPlayerToMove());
     		stateDTO.setBoard(gameService.getBoard());
+    		stateDTO.setScore(new ArrayList<Integer>(gameService.getInfo().getScore().values()));
     		return new ResponseEntity<>(stateDTO, HttpStatus.OK);
     	}
 		return new ResponseEntity<>(gameService.isCompleted().getErrorMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -56,13 +55,22 @@ public class GameController {
 	
 	@ControllerAdvice
     @GetMapping(AI_MOVE_ENDPOINT)
-	public ResponseEntity<?> getAIMove(@RequestParam("gameId") String gameId, GameDTO stateDTO) {
-		gameService.play(); // AI move
-		Action AIMove = gameService.getCurrentMove();
-		stateDTO.setMoveX(AIMove.getX());
-		stateDTO.setMoveY(AIMove.getY());
-		stateDTO.setPlayerToMove(gameService.getInfo().getPlayerToMove());
-		stateDTO.setBoard(gameService.getBoard());
+	public ResponseEntity<?> getAIMove() {
+    	gameService.makeDecision();
+    	if (gameService.isCompleted().isSuccess()) {
+    		gameService.play(); // AI move
+    		gameService.nextState();
+    		Action AIMove = gameService.getCurrentMove();
+    		GameDTO gameDTO = new GameDTO();
+    		gameDTO.setMoveX(AIMove.getX());
+    		gameDTO.setMoveY(AIMove.getY());
+    		gameDTO.setPlayerToMove(gameService.getInfo().getPlayerToMove());
+    		gameDTO.setBoard(gameService.getBoard());
+    		gameDTO.setGameMessage(String.format(AI_MOVE_MESSAGE, gameDTO.getMoveX(), gameDTO.getMoveY()));
+    		gameDTO.setAvailableMoves(gameService.getInfo().getAvailableMoves());
+    		gameDTO.setScore(new ArrayList<Integer>(gameService.getInfo().getScore().values()));
+    		return new ResponseEntity<>(gameDTO, HttpStatus.OK);
+    	}	
 		return new ResponseEntity<>(gameService.isCompleted().getErrorMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
     
@@ -75,6 +83,8 @@ public class GameController {
     	if (gameService.isCompleted().isSuccess()) {
     		gameService.nextState();
     		stateDTO.setGameMessage(color.equals(TileStates.BLACK) ? PLAY_FIRST_MESSAGE : PLAY_AI_MESSAGE);
+    		stateDTO.setAvailableMoves(gameService.getInfo().getAvailableMoves());
+    		stateDTO.setScore(new ArrayList<Integer>(gameService.getInfo().getScore().values()));
     		return new ResponseEntity<>(stateDTO, HttpStatus.OK);
     	}
     	return new ResponseEntity<>(gameService.isCompleted().getErrorMessage(), HttpStatus.FORBIDDEN);	
