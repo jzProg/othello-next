@@ -1,4 +1,7 @@
 # Othello Next
+
+[![Build Status](https://travis-ci.org/jzProg/othello-next.svg?branch=master)](https://travis-ci.org/jzProg/othello-next)
+
 Re-implementation of my older [Othello](https://github.com/jzProg/othello-game) project, using web technologies.
 
 ## Setup Instructions
