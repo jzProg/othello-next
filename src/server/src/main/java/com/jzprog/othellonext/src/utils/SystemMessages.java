@@ -17,6 +17,7 @@ public class SystemMessages {
 	public static final String NO_AVAILABLE_MOVE_ERROR = "%s cannot play! Next Player's Turn!";
 	public static final String PLAY_FIRST_MESSAGE = "You play First!";
 	public static final String PLAY_AI_MESSAGE = "AI player's turn!";
+	public static final String AI_MOVE_MESSAGE = "AI played (%s,%s). Your turn...";
 
 
 	public enum ValidationTypes {

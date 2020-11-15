@@ -3,8 +3,10 @@
       <div id="gameDiv" class="text-center">
         <table style='width:600px;margin: 0 auto;margin-top: 5%'>
           <tr v-for="row in 8" :key="row">
-            <td v-for="column in 8" class="pieceBox" :key="column">
-              <i @click.prevent="play(row - 1, column - 1)" class="fas fa-circle fa-4x" :style="{ color: getPlayerColor(row - 1, column - 1) }"/>
+            <td v-for="column in 8" :class="['pieceBox', isAvailableMove(row - 1, column - 1) ? 'highLight' : '' ]" :key="column">
+              <i @click.prevent="play(row - 1, column - 1)"
+                 class="fas fa-circle fa-4x"
+                 :style="{ color: getPlayerColor(row - 1, column - 1) }"/>
             </td>
             <td class="numberBox">
               <h3><b>{{ row }}</b></h3>
@@ -23,11 +25,11 @@
 <script>
   export default {
     name: 'GameBoard',
-    props: ['gameId', 'board'],
+    props: ['gameId', 'board', 'availableMoves'],
     data() {
       return {
         colorPerState: {
-          EMPTY: 'green',
+          EMPTY: 'transparent',
           WHITE: 'white',
           BLACK: 'black'
         },
@@ -36,9 +38,15 @@
     },
     methods: {
       play(x, y) {
-        this.axios.get(`/api/game/play`, { params: { moveX: x, moveY: y, gameId: this.gameId }}).then((response) => {
+        this.axios.get('/api/game/play', { params: { moveX: x, moveY: y, gameId: this.gameId }}).then((response) => {
           this.$emit('played', response.data);
+        }).catch((error) => {
+          console.log(error)
+          this.$emit('error', error.response.data, error.response.data.includes('%s'));
         });
+      },
+      isAvailableMove(x, y) {
+        return this.availableMoves.filter(move => move.x === parseInt(x) && move.y === parseInt(y)).length > 0;
       },
       getPlayerColor(x, y) {
         if (!this.board[x] || !this.board[x][y]) {
@@ -79,5 +87,9 @@
     background-color: gray;
     height: 70px;
     width: 150px;
+  }
+
+  .highLight {
+    background-color: yellow;
   }
 </style>
