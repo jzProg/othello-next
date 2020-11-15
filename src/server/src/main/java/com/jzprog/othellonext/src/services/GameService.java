@@ -1,16 +1,17 @@
 package com.jzprog.othellonext.src.services;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.context.annotation.ScopedProxyMode;
-
 import com.jzprog.othellonext.src.advices.LogMethodInfo;
 import com.jzprog.othellonext.src.model.Action;
 import com.jzprog.othellonext.src.model.StateInfo;
 import com.jzprog.othellonext.src.model.ValidationResponse;
 import com.jzprog.othellonext.src.services.validation.ValidationStrategy;
 import com.jzprog.othellonext.src.utils.SystemMessages;
+import com.jzprog.othellonext.src.utils.SystemMessages.MoveResults;
 import com.jzprog.othellonext.src.utils.SystemMessages.TileStates;
 
 @Service
@@ -29,7 +30,8 @@ public class GameService {
 	private TileStates player; // the color of User player
 	private ValidationResponse completed;
 	private int gameId = -1;
-	
+	private MoveResults result;
+
 	public int init() {
 		gameState = new InitialState();
 		setCompleted(validation.provideValidation(SystemMessages.ValidationTypes.RESET_GAME_VALIDATION, gameState)); // validate -> always
@@ -39,6 +41,7 @@ public class GameService {
 	
 	public void play() {
 		gameState.makeMove(this);
+		checkResult();
 	}
 	
 	public void nextState() {
@@ -92,6 +95,10 @@ public class GameService {
 	public int getGameId() {
 		return gameId;
 	}
+	
+	public MoveResults getResult() {
+		return result;
+	}
 
 	public void setGameId(int gameId) {
 		this.gameId = gameId;
@@ -119,6 +126,24 @@ public class GameService {
 		setCurrentMove(minMax.makeDecision(getInfo().clone()));
 	}
 
+	private double determineWinner(TileStates player) {
+		double utility = getUtility();
+		if (player.equals(TileStates.WHITE)) utility = 1 - utility;
+		return utility;
+	}
+	
+	public void checkResult() {
+	  if (isTerminal()){
+		  String winner = determineWinner(TileStates.BLACK) == 1 ? TileStates.BLACK.name() : determineWinner(TileStates.WHITE) == 1 ? TileStates.WHITE.name() : "";
+		 if (winner.equals("")) { // draw
+			 this.result = MoveResults.DRAW; 
+		 } else {
+			 if (winner.equals(player.name())) this.result = MoveResults.WINNING_MOVE;
+			 else this.result = MoveResults.LOSING_MOVE;
+		 }
+	  }
+	}
+	
 	protected void initBoard() {
 		TileStates[][] board = new TileStates[8][8];
 		for (int i = 0; i < 8; i++){

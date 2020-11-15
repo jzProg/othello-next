@@ -3,8 +3,8 @@
       <div id="titleDiv" class="col-md-3" style="color: lightblue">Othello Riversi</div>
       <div id="turnDiv" class="col-md-3 text-center" v-show="!renderGameInfo">{{ player }} player</div>
       <div id="scoreDiv" class="col-md-3 text-center" v-show="!renderGameInfo" style="color: white">
-        <i class="fas fa-circle" style="borderColor: white; border-radius:20px; border-style:solid; color: black"/> {{ scoreInfo[0] }}
-        <i class="fas fa-circle" style="borderColor: white; border-radius:20px; border-style:solid; color: white"/> {{ scoreInfo[1] }}
+        <i class="fas fa-circle" style="borderColor: white; border-radius:20px; border-style:solid; color: black"/> {{ scoreInfo.BLACK }}
+        <i class="fas fa-circle" style="borderColor: white; border-radius:20px; border-style:solid; color: white"/> {{ scoreInfo.WHITE }}
       </div>
       <div id="resetDiv" class="col-md-3 text-center" v-show="!renderGameInfo">
         <a @click.prevent="reset()" class="reset">

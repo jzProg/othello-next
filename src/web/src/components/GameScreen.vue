@@ -7,6 +7,7 @@
       <TextUI :messages="msgs" />
     </template>
     <ErrorModal v-if="showError" :message="msgs[msgs.length - 1]" @close="onErrorConfirm" />
+    <PostGame v-if="gameFinished" :message="msgs[msgs.length - 1]" @play="reset" />
   </div>
 </template>
 
@@ -16,10 +17,11 @@
   import TextUI from '@/components/TextUI';
   import GameStatusBar from '@/components/GameStatusBar';
   import ErrorModal from '@/components/modals/ErrorModal';
+  import PostGame from '@/components/modals/PostGame';
 
   export default {
     name: 'GameScreen',
-    components: { GameBoard, GameStatusBar, Options, TextUI, ErrorModal },
+    components: { GameBoard, GameStatusBar, Options, TextUI, ErrorModal, PostGame },
     data() {
       return {
         msgs: [],
@@ -32,6 +34,7 @@
         loseTurn: false,
         score: [],
         availableMoves: [],
+        gameFinished: false,
       }
     },
     created() {
@@ -43,14 +46,17 @@
         this.showError = true;
         this.loseTurn = loseTurn;
       },
-      onPlayed(result) {
+      onPlayed(response) {
         this.availableMoves = [];
-        const { gameMessage, playerToMove, board, score }  = result;
+        const { gameMessage, playerToMove, board, score, result }  = response;
         this.msgs.push(gameMessage);
         this.player = playerToMove.toLowerCase();
         this.board = board;
         this.score = score;
-        this.getAIMove();
+        if (result) {
+          this.gameFinished = true;
+          this.msgs.push(result);
+        } else this.getAIMove();
       },
       onErrorConfirm() {
         this.showError = false;
@@ -65,12 +71,16 @@
       getAIMove() {
         setTimeout(() => {
           this.axios.get('/api/game/getAIMove').then((response) => {
-              const { gameMessage, playerToMove, board, score, availableMoves } = response.data;
+              const { gameMessage, playerToMove, board, score, availableMoves, result } = response.data;
               this.msgs.push(gameMessage);
               this.player = playerToMove.toLowerCase();
               this.board = board;
               this.score = score;
               this.availableMoves = availableMoves;
+              if (result) {
+                this.gameFinished = true;
+                this.msgs.push(result);
+              }
           }).catch((error) => {
             this.onError(error.response.data);
           });
@@ -97,6 +107,7 @@
         })
       },
       reset() {
+        this.gameFinished = false;
         this.msgs = [];
         this.init();
       }

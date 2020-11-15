@@ -2,6 +2,7 @@ package com.jzprog.othellonext.src.model;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -17,7 +18,8 @@ public class GameDTO {
 	private String playerToMove;
 	private TileStates[][] board;
 	private List<Action> availableMoves;
-	private List<Integer> score;
+	private Map<TileStates, Integer> score;
+	private String result;
 	
 	public int getMoveX() {
 		return moveX;
@@ -83,18 +85,27 @@ public class GameDTO {
 		this.availableMoves = availableMoves;
 	}
 
-	public List<Integer> getScore() {
+	public Map<TileStates, Integer> getScore() {
 		return score;
 	}
 
-	public void setScore(List<Integer> score) {
+	public void setScore(Map<TileStates, Integer> score) {
 		this.score = score;
+	}
+
+	public String getResult() {
+		return result;
+	}
+
+	public void setResult(String result) {
+		this.result = result;
 	}
 
 	@Override
 	public String toString() {
 		return "GameDTO [gameId=" + gameId + ", gameMessage=" + gameMessage + ", moveX=" + moveX + ", moveY=" + moveY
 				+ ", playerColor=" + playerColor + ", playerToMove=" + playerToMove + ", board="
-				+ Arrays.toString(board) + ", availableMoves=" + availableMoves + ", score=" + score + "]";
+				+ Arrays.toString(board) + ", availableMoves=" + availableMoves + ", score=" + score + ", result="
+				+ result + "]";
 	}
 }

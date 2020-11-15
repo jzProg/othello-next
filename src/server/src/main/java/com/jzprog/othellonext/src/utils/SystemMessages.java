@@ -36,6 +36,7 @@ public class SystemMessages {
 		INVALID_MOVE("Invalid Move!Try Again!"),
 		VALID_MOVE("You played (%s,%s). Next Player's turn..."),
 		WINNING_MOVE("You won the game!"),
+		DRAW("Draw! No winner..."),
 		LOSING_MOVE("You lost the game...");
     	
     	private String text;
