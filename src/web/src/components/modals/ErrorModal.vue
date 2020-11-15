@@ -17,7 +17,7 @@
    </template>
    <template v-slot:[footer]>
      <div class="text-center">
-       <button @click.prevent="confirm">OK</button>
+       <button class="btn btn-primary" @click.prevent="confirm">OK</button>
      </div>
   </template>
   </Modal>

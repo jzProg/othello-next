@@ -210,7 +210,7 @@ public class StateInfo implements Cloneable {
 		applyFlips(r, c);
 		analyzeUtility(); // update utility
 		setNextPlayer();  // update player to move next
-		availableMoves = calculateAvailableMoves(); // calculate next player's available moves
+		availableMoves = calculateAvailableMoves(); // calculate next player's available moves		 
 	}
 	
 	// checks for flips in all directions and applies them
@@ -235,6 +235,7 @@ public class StateInfo implements Cloneable {
 		        	  break;
 		          }
 			  }
+			  flipCandidates.clear();
 		  }
 	}
 	

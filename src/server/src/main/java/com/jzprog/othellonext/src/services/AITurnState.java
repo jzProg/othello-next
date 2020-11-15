@@ -8,6 +8,7 @@ public class AITurnState implements GameState {
 	@Override
 	public void makeMove(GameService game) {
 		game.putDisc();
+		game.checkNextPlayerAvailability();
 	}
 
 	@Override

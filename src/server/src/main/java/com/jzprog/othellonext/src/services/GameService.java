@@ -121,10 +121,16 @@ public class GameService {
 		return gameInfo;
 	}
 	
+	public void checkNextPlayerAvailability() {
+		if (!getInfo().canPlay(getInfo().getPlayerToMove())) {
+			getInfo().setNextPlayer();
+		}
+	}
+	
 	@LogMethodInfo
 	public void putDisc() {
 		Action move = getCurrentMove();
-		gameInfo.putDisc(move.getX(), move.getY());
+		gameInfo.putDisc(move.getX(), move.getY());	
 	}
 	
 	public void makeDecision() {
