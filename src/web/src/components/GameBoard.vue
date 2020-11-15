@@ -41,7 +41,6 @@
         this.axios.get('/api/game/play', { params: { moveX: x, moveY: y, gameId: this.gameId }}).then((response) => {
           this.$emit('played', response.data);
         }).catch((error) => {
-          console.log(error)
           this.$emit('error', error.response.data, error.response.data.includes('%s'));
         });
       },

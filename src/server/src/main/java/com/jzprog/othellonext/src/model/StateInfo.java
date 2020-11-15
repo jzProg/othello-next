@@ -251,7 +251,7 @@ public class StateInfo implements Cloneable {
 	}
 	
 	// configures player to move next
-	private void setNextPlayer() {
+	public void setNextPlayer() {
 		setPlayerToMove(getOpponentColor(playerToMove)); // next player's turn					
 	}
 	

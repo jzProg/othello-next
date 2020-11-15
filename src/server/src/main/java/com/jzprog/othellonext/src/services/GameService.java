@@ -64,6 +64,11 @@ public class GameService {
 	public void setCurrentMove(Action currentMove) {
 		setCompleted(validation.provideValidation(SystemMessages.ValidationTypes.MOVE_VALIDITY, gameState, currentMove, getInfo().clone(), getPlayer())); // validate -> only when player turn
 		if (isCompleted().isSuccess()) this.currentMove = currentMove;
+		else if (isCompleted().getErrorMessage().equals(SystemMessages.NO_AVAILABLE_MOVE_ERROR)){
+			getInfo().setNextPlayer();
+		} else if (isCompleted().getErrorMessage().equals(SystemMessages.NON_EMPTY_MOVE_ERROR)) {
+			getInfo().analyzeUtility();
+		}
 	}
 	
 	public TileStates getPlayer() {

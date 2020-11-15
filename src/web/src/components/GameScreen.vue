@@ -81,6 +81,9 @@
                 this.gameFinished = true;
                 this.msgs.push(result);
               }
+              if (!this.gameFinished && !availableMoves.length) {
+                this.getAIMove(); // if no available moves for the user, AI plays again
+              }  
           }).catch((error) => {
             this.onError(error.response.data);
           });
