@@ -18,11 +18,11 @@
   .textContainer{
     background-color: black;
     color: white;
-    padding: 2%;
+    padding: 1%;
   }
 
   .scrollable {
-    height: 300px;
+    height: 200px;
     overflow-y:auto;
     max-width: 100%;
     overflow-x: hidden;

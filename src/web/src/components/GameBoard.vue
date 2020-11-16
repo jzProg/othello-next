@@ -1,7 +1,7 @@
 <template>
   <div class="game-container row">
       <div id="gameDiv" class="text-center">
-        <table style='width:600px;margin: 0 auto;margin-top: 5%'>
+        <table style='width:600px;margin: 0 auto;margin-top: 2%'>
           <tr v-for="row in 8" :key="row">
             <td v-for="column in 8" :class="['pieceBox', isAvailableMove(row - 1, column - 1) ? 'highLight' : '' ]" :key="column">
               <i @click.prevent="play(row - 1, column - 1)"
@@ -60,7 +60,6 @@
 <style scoped>
   #gameDiv {
     background-color: gray;
-    padding-top: 1%;
   }
 
   .pieceBox {
