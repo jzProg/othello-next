@@ -14,7 +14,11 @@ public class MinMaxSearch  {
 	@Value("${min.max.search.depth}")
 	private int depth;
 
-	private String computerPlayer; //computer player's color
+	private String computerPlayer; // computer player's color
+	
+	public void updateDepth(int customDepth) {
+		this.depth = customDepth;
+	}
 
 	@LogMethodInfo
 	public Action makeDecision(StateInfo state){
@@ -34,19 +38,19 @@ public class MinMaxSearch  {
 	   return result;
     }
 	
-	//returns the state-result after performing the given action on the given state
+	// returns the state-result after performing the given action on the given state
 	private StateInfo getResult(StateInfo state, Action action){
 	  StateInfo result = state.clone();
       result.putDisc(action);
 	  return result;
 	}
 	  
-	//checks if the given state is a terminal state of the game
+	// checks if the given state is a terminal state of the game
 	private boolean isTerminal(StateInfo state){
 	  return state.getUtility() != -1;
 	}
 	
-	//finds the maximum value of given state's children values
+	// finds the maximum value of given state's children values
 	private double maxValue(StateInfo state,double alpha,double beta){ 
 	  depth--;
 	  if (isTerminal(state) || depth <= 0) return heuristicFunctionValue(state);
@@ -59,7 +63,7 @@ public class MinMaxSearch  {
 	  return value;
 	 }
 
-	//finds the minimum value of given state's children values
+	// finds the minimum value of given state's children values
 	private double minValue(StateInfo state,double alpha,double beta){ 
 	  depth--;
 	  if (isTerminal(state) || depth <= 0)	return heuristicFunctionValue(state);
@@ -72,7 +76,7 @@ public class MinMaxSearch  {
 	   return value;
 	 }
 
-	//produce a value for the given state depending on various factors such as disc parity and mobility
+	// produce a value for the given state depending on various factors such as disc parity and mobility
 	private double heuristicFunctionValue(StateInfo state) {
 	  double value = 0;
 	  if (isTerminal(state)) {

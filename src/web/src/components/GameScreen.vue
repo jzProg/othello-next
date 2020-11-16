@@ -1,9 +1,9 @@
 <template>
   <div class="board container">
     <GameStatusBar :score-info="score" :player="playerTurn" :render-game-info="showOptions" @new-game="reset"/>
-    <Options v-if="showOptions" :options="options" @select="choose" @close="choose" />
+    <Options v-if="showOptions" :options="options" :levels="levels" @select="choose" @close="choose" />
     <template v-else>
-      <GameBoard :gameId="gameId" :board="board" :available-moves="availableMoves" @played="onPlayed" @error="onError"/>
+      <GameBoard :gameId="gameId" :board="board" :available-moves="availableMoves" @onplay="onPlayed" @error="onError"/>
       <TextUI :messages="msgs" />
     </template>
     <ErrorModal v-if="showError" :message="msgs[msgs.length - 1]" @close="onErrorConfirm" />
@@ -31,11 +31,13 @@
         gameId: null,
         showOptions: false,
         options: [ 'BLACK', 'WHITE'],
+        levels: ['EASY', 'DIFFICULT'],
         playerTurn: '',
         board: [],
         showError: false,
         loseTurn: false,
         score: [],
+        level: '',
         availableMoves: [],
         gameFinished: false,
         loseTurnMessage: 'No moves Available. You lose turn...',
@@ -91,8 +93,9 @@
           }, this.onError);
         }, 1000);
       },
-      choose(color) {
-        this.playerColor = color || this.options[0];
+      choose(choices) {
+        this.playerColor = choices.color || this.options[0]; // black -> easy
+        this.level = choices.level || this.levels[0]; // default -> easy
         this.playerTurn = this.options[0]; // black always first
         this.sendMove('CHOOSE', (response) => {
           this.showOptions = false;
@@ -100,8 +103,8 @@
           this.msgs.push(gameMessage);
           this.score = score;
           this.availableMoves = availableMoves;
-          if (color === this.options[1]) this.getAIMove(); // if user chose WHITE, AI plays first
-        }, () => {}, { playerColor: this.playerColor, gameId: this.gameId });
+          if (this.playerColor === this.options[1]) this.getAIMove(); // if user chose WHITE, AI plays first
+        }, () => {}, { playerColor: this.playerColor, gameId: this.gameId, gameLevel: this.level });
       },
       init() {
         this.sendMove('INIT', (response) => {

@@ -11,6 +11,7 @@ import com.jzprog.othellonext.src.utils.SystemMessages.TileStates;
 @Component
 public class GameDTO {
 	private int gameId;
+	private String gameLevel;
 	private String gameMessage;
 	private int moveX;
 	private int moveY;
@@ -100,12 +101,22 @@ public class GameDTO {
 	public void setResult(String result) {
 		this.result = result;
 	}
+	
+	
+
+	public String getGameLevel() {
+		return gameLevel;
+	}
+
+	public void setGameLevel(String gameLevel) {
+		this.gameLevel = gameLevel;
+	}
 
 	@Override
 	public String toString() {
-		return "GameDTO [gameId=" + gameId + ", gameMessage=" + gameMessage + ", moveX=" + moveX + ", moveY=" + moveY
-				+ ", playerColor=" + playerColor + ", playerToMove=" + playerToMove + ", board="
-				+ Arrays.toString(board) + ", availableMoves=" + availableMoves + ", score=" + score + ", result="
-				+ result + "]";
+		return "GameDTO [gameId=" + gameId + ", gameLevel=" + gameLevel + ", gameMessage=" + gameMessage + ", moveX="
+				+ moveX + ", moveY=" + moveY + ", playerColor=" + playerColor + ", playerToMove=" + playerToMove
+				+ ", board=" + Arrays.toString(board) + ", availableMoves=" + availableMoves + ", score=" + score
+				+ ", result=" + result + "]";
 	}
 }

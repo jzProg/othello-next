@@ -42,7 +42,7 @@
     methods: {
       play(x, y) {
         this.sendMove('PLAY',
-          response => this.$emit('played', response.data),
+          response => this.$emit('onplay', response.data),
           error => this.$emit('error', error.response.data, error.response.data.includes('%s')),
           { moveX: x, moveY: y, gameId: this.gameId });
       },

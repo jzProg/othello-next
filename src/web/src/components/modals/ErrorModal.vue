@@ -1,8 +1,7 @@
 <template>
   <Modal>
     <template v-slot:[closeButton]>
-      <span id='closeSymbol'
-        @click.prevent="close">x</span>
+      <span id='closeSymbol' @click.prevent="close">x</span>
     </template>
     <br>
     <template v-slot:[header]>

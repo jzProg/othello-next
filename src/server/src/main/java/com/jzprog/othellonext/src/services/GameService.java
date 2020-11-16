@@ -11,6 +11,7 @@ import com.jzprog.othellonext.src.model.StateInfo;
 import com.jzprog.othellonext.src.model.ValidationResponse;
 import com.jzprog.othellonext.src.services.validation.ValidationStrategy;
 import com.jzprog.othellonext.src.utils.SystemMessages;
+import com.jzprog.othellonext.src.utils.SystemMessages.GameLevels;
 import com.jzprog.othellonext.src.utils.SystemMessages.MoveResults;
 import com.jzprog.othellonext.src.utils.SystemMessages.TileStates;
 
@@ -106,6 +107,13 @@ public class GameService {
 		return gameId;
 	}
 	
+	public void setDifficulty(GameLevels difficulty) {
+		if (difficulty == null) {
+			difficulty = GameLevels.EASY;
+		}
+		minMax.updateDepth(difficulty.getDepth());
+	}
+	
 	public MoveResults getResult() {
 		return result;
 	}
@@ -181,12 +189,5 @@ public class GameService {
 		board[4][3] = TileStates.BLACK;
 		board[4][4] = TileStates.WHITE;
 		gameInfo = new StateInfo(board, TileStates.BLACK, -1);
-	}
-
-	@Override
-	public String toString() {
-		return "GameService [validation=" + validation + ", gameState=" + gameState + ", gameInfo=" + gameInfo
-				+ ", currentMove=" + currentMove + ", player=" + player + ", completed=" + completed + ", gameId="
-				+ gameId + "]";
 	}
 }

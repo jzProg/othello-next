@@ -82,6 +82,7 @@ public class GameController {
 	public ResponseEntity<?> choose(@RequestParam("gameId") String gameId, GameDTO stateDTO) {
 		TileStates color = TileStates.valueOf(stateDTO.getPlayerColor());
     	gameService.setPlayer(color);
+		gameService.setDifficulty(GameLevels.valueOf(stateDTO.getGameLevel()));
     	if (gameService.isCompleted().isSuccess()) {
     		gameService.nextState();
     		stateDTO.setGameMessage(color.equals(TileStates.BLACK) ? PLAY_FIRST_MESSAGE : PLAY_AI_MESSAGE);
