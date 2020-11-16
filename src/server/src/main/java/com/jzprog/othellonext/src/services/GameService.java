@@ -68,7 +68,6 @@ public class GameService {
 		setCompleted(validation.provideValidation(SystemMessages.ValidationTypes.MOVE_VALIDITY, gameState, currentMove, getInfo().clone(), getPlayer())); // validate -> only when player turn
 		if (isCompleted().isSuccess()) this.currentMove = currentMove;
 		else if (isCompleted().getErrorMessage().equals(SystemMessages.NO_AVAILABLE_MOVE_ERROR)){
-			System.out.println("NO_AVAILABLE_MOVE_ERROR_1");
 			checkResult();
 			getInfo().setNextPlayer();
 			getInfo().calculateAvailableMoves();
@@ -137,7 +136,6 @@ public class GameService {
 	@LogMethodInfo
 	public boolean checkNextPlayerAvailability() {
 		if (!getInfo().canPlay(getInfo().getPlayerToMove())) {
-			System.out.println("NO_AVAILABLE_MOVE_ERROR_2");
 			getInfo().setNextPlayer();
 			getInfo().calculateAvailableMoves();
 			return false;

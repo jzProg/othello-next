@@ -42,7 +42,6 @@ public class MoveValidator implements ValidationService {
 	
 	@LogMethodInfo
 	private boolean isValidMove(Action move, StateInfo state) {
-	  System.out.println("move: " + move + " state: " + state);
 	  if(state.getUtility() == -1 && (move == null || !state.canPlay(move.getPlayerToMove().name()) )){  // if current player is unable to play
 	    setErrorMessage(SystemMessages.NO_AVAILABLE_MOVE_ERROR);
 	    return false;
