@@ -28,7 +28,7 @@ public class StateInfo implements Cloneable {
 		othelloBoard = board;
 		this.utility = utility;
 		this.playerToMove = playerToMove;
-		availableMoves = calculateAvailableMoves();
+		calculateAvailableMoves();
 		score = new HashMap<>();
 		score.put(TileStates.BLACK, 2);
 		score.put(TileStates.WHITE, 2);
@@ -55,6 +55,7 @@ public class StateInfo implements Cloneable {
 	  return othelloBoard[r][c].equals(TileStates.EMPTY);
 	}
 	
+	@LogMethodInfo
 	public List<Action> getAvailableMoves() {
 		return availableMoves;
 	}
@@ -73,7 +74,8 @@ public class StateInfo implements Cloneable {
 	  return othelloBoard[r][c];
 	}
 	
-	public List<Action> calculateAvailableMoves() {
+	@LogMethodInfo
+	public void calculateAvailableMoves() {
 	   List<Action> moves = new ArrayList<Action>();
 	   for(int j = 0; j < 8; j++) {
 		for(int i = 0; i < 8; i++) {
@@ -83,7 +85,7 @@ public class StateInfo implements Cloneable {
 		  }
 		 }
 	    }
-		return  moves;
+	   availableMoves = moves;
 	}
 	
 	private boolean isValidMove(Action move) {
@@ -210,7 +212,7 @@ public class StateInfo implements Cloneable {
 		applyFlips(r, c);
 		analyzeUtility(); // update utility
 		setNextPlayer();  // update player to move next
-		availableMoves = calculateAvailableMoves(); // calculate next player's available moves		 
+		calculateAvailableMoves(); // calculate next player's available moves	 
 	}
 	
 	// checks for flips in all directions and applies them
@@ -277,6 +279,7 @@ public class StateInfo implements Cloneable {
 	}
 	
 	//checks if the given player has moves to play
+	@LogMethodInfo
 	public boolean canPlay(String player) {
 		return !availableMoves.isEmpty();
 

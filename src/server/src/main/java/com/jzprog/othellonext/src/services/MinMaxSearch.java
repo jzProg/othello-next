@@ -112,11 +112,13 @@ public class MinMaxSearch  {
 		 if (playerColor.equals(state.getPlayerToMove())) {
 			 mob1 = state.getAvailableMoves().size();
 			 state.setPlayerToMove(TileStates.valueOf(computerPlayer));
-			 mob2 = state.calculateAvailableMoves().size();
+			 state.calculateAvailableMoves();
+			 mob2 = state.getAvailableMoves().size();
 		 } else {
 			 mob2 = state.getAvailableMoves().size();
 			 state.setPlayerToMove(TileStates.valueOf(playerColor));
-			 mob1 = state.calculateAvailableMoves().size();
+			 state.calculateAvailableMoves();
+			 mob1 = state.getAvailableMoves().size();
 		 }
 		 value += 8*(100*(mob1 - mob2)/(mob1 + mob2));
 		 return value;
