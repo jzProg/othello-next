@@ -67,6 +67,7 @@ public class GameService {
 		else if (isCompleted().getErrorMessage().equals(SystemMessages.NO_AVAILABLE_MOVE_ERROR)){
 			checkResult();
 			getInfo().setNextPlayer();
+			getInfo().calculateAvailableMoves();
 		} else if (isCompleted().getErrorMessage().equals(SystemMessages.NON_EMPTY_MOVE_ERROR)) {
 			getInfo().analyzeUtility();
 		}
