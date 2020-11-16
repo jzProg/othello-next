@@ -39,11 +39,13 @@ public class GameService {
 		return gameId;
 	}
 	
+	@LogMethodInfo
 	public void play() {
 		gameState.makeMove(this);
 		checkResult();
 	}
 	
+	@LogMethodInfo
 	public void nextState() {
 		gameState.next(this);
 	}
@@ -65,6 +67,7 @@ public class GameService {
 		setCompleted(validation.provideValidation(SystemMessages.ValidationTypes.MOVE_VALIDITY, gameState, currentMove, getInfo().clone(), getPlayer())); // validate -> only when player turn
 		if (isCompleted().isSuccess()) this.currentMove = currentMove;
 		else if (isCompleted().getErrorMessage().equals(SystemMessages.NO_AVAILABLE_MOVE_ERROR)){
+			System.out.println("NO_AVAILABLE_MOVE_ERROR_1");
 			checkResult();
 			getInfo().setNextPlayer();
 			getInfo().calculateAvailableMoves();
@@ -123,8 +126,10 @@ public class GameService {
 		return gameInfo;
 	}
 	
+	@LogMethodInfo
 	public boolean checkNextPlayerAvailability() {
 		if (!getInfo().canPlay(getInfo().getPlayerToMove())) {
+			System.out.println("NO_AVAILABLE_MOVE_ERROR_2");
 			getInfo().setNextPlayer();
 			getInfo().calculateAvailableMoves();
 			return false;
@@ -142,12 +147,16 @@ public class GameService {
 		setCurrentMove(minMax.makeDecision(getInfo().clone()));
 	}
 
+	@LogMethodInfo
 	private double determineWinner(TileStates player) {
 		double utility = getUtility();
+		System.out.print("initial:"+utility);
 		if (player.equals(TileStates.WHITE)) utility = 1 - utility;
+		System.out.print("final:"+utility);
 		return utility;
 	}
 	
+	@LogMethodInfo
 	public void checkResult() {
 	  if (isTerminal()){
 		  String winner = determineWinner(TileStates.BLACK) == 1 ? TileStates.BLACK.name() : determineWinner(TileStates.WHITE) == 1 ? TileStates.WHITE.name() : "";

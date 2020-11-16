@@ -23,9 +23,12 @@
 </template>
 
 <script>
+  import ApiHelper from '@/common/mixins/ApiHelper';
+
   export default {
     name: 'GameBoard',
     props: ['gameId', 'board', 'availableMoves'],
+    mixins: [ApiHelper],
     data() {
       return {
         colorPerState: {
@@ -38,11 +41,10 @@
     },
     methods: {
       play(x, y) {
-        this.axios.get('/api/game/play', { params: { moveX: x, moveY: y, gameId: this.gameId }}).then((response) => {
-          this.$emit('played', response.data);
-        }).catch((error) => {
-          this.$emit('error', error.response.data, error.response.data.includes('%s'));
-        });
+        this.sendMove('PLAY',
+          response => this.$emit('played', response.data),
+          error => this.$emit('error', error.response.data, error.response.data.includes('%s')),
+          { moveX: x, moveY: y, gameId: this.gameId });
       },
       isAvailableMove(x, y) {
         return this.availableMoves.filter(move => move.x === parseInt(x) && move.y === parseInt(y)).length > 0;

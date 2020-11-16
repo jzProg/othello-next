@@ -1,6 +1,8 @@
 package com.jzprog.othellonext.src.services.validation;
 
 import org.springframework.stereotype.Service;
+
+import com.jzprog.othellonext.src.advices.LogMethodInfo;
 import com.jzprog.othellonext.src.model.Action;
 import com.jzprog.othellonext.src.model.StateInfo;
 import com.jzprog.othellonext.src.model.Validatable;
@@ -38,7 +40,9 @@ public class MoveValidator implements ValidationService {
 		errorMessage = message;
 	}
 	
+	@LogMethodInfo
 	private boolean isValidMove(Action move, StateInfo state) {
+	  System.out.println("move: " + move + " state: " + state);
 	  if(state.getUtility() == -1 && (move == null || !state.canPlay(move.getPlayerToMove().name()) )){  // if current player is unable to play
 	    setErrorMessage(SystemMessages.NO_AVAILABLE_MOVE_ERROR);
 	    return false;

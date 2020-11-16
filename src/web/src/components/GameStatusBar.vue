@@ -1,7 +1,9 @@
 <template>
   <div id= "turnRow" class="row">
       <div id="titleDiv" class="col-md-3" style="color: lightblue">Othello Riversi</div>
-      <div id="turnDiv" class="col-md-3 text-center" v-show="!renderGameInfo">{{ player }} player</div>
+      <div id="turnDiv" class="col-md-3 text-center" v-show="!renderGameInfo">
+        Turn: <i class="fas fa-circle" :style="{ borderColor: 'white', borderRadius: '20px', borderStyle: 'solid', color: player.toLowerCase()}"/>
+      </div>
       <div id="scoreDiv" class="col-md-3 text-center" v-show="!renderGameInfo" style="color: white">
         <i class="fas fa-circle" style="borderColor: white; border-radius:20px; border-style:solid; color: black"/> {{ scoreInfo.BLACK }}
         <i class="fas fa-circle" style="borderColor: white; border-radius:20px; border-style:solid; color: white"/> {{ scoreInfo.WHITE }}
@@ -37,10 +39,10 @@
      background-color: green;
      color: white;
      min-height: 30px;
-     width: 150px;
+     width: 120px;
      padding: 10px;
      margin-top: 1%;
-     border-radius: 7%;
+     border-radius: 2px;
      font-size: 150%;
   }
 
