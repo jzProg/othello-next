@@ -77,6 +77,7 @@
         }
       },
       getAIMove() {
+        this.availableMoves = [];
         setTimeout(() => {
           this.sendMove('AI', (response) => {
               const { gameMessage, playerToMove, board, score, availableMoves, result } = response.data;

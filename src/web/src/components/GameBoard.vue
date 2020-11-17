@@ -3,10 +3,9 @@
       <div id="gameDiv" class="text-center">
         <table style='width:600px;margin: 0 auto;margin-top: 2%'>
           <tr v-for="row in 8" :key="row">
-            <td v-for="column in 8" :class="['pieceBox', isAvailableMove(row - 1, column - 1) ? 'highLight' : '' ]" :key="column">
+            <td v-for="column in 8" :class="['pieceBox', isAvailableMove(row - 1, column - 1) ? 'highLight' : '' ]" :key="column"  :disabled="!isAvailableMove(row - 1, column - 1) || !!occupied">
               <i @click.prevent="play(row - 1, column - 1)"
                  class="fas fa-circle fa-4x"
-                 :disabled="!isAvailableMove(row - 1, column - 1)"
                  :style="{ color: getPlayerColor(row - 1, column - 1) }"/>
             </td>
             <td class="numberBox">
@@ -32,6 +31,7 @@
     mixins: [ApiHelper],
     data() {
       return {
+        occupied: false,
         colorPerState: {
           EMPTY: 'transparent',
           WHITE: 'white',
@@ -42,14 +42,16 @@
     },
     methods: {
       play(x, y) {
-        if (this.board[x][y] === 'EMPTY') {
+        if (this.isAvailableMove(x, y) && this.occupied === false) {
+          this.lock();
           this.sendMove('PLAY',
-            response => this.$emit('onplay', response.data),
-            error => this.$emit('error', error.response.data, error.response.data.includes('%s')),
+            response => { this.unlock(); this.$emit('onplay', response.data) },
+            error => { this.unlock(); this.$emit('error', error.response.data, error.response.data.includes('%s')) },
             { moveX: x, moveY: y, gameId: this.gameId });
         }
       },
       isAvailableMove(x, y) {
+        if (!this.board[x] || this.board[x][y] !== 'EMPTY') return false;
         return this.availableMoves.filter(move => move.x === parseInt(x) && move.y === parseInt(y)).length > 0;
       },
       getPlayerColor(x, y) {
@@ -57,6 +59,12 @@
           return this.colorPerState.EMPTY;
         }
         return this.colorPerState[this.board[x][y]];
+      },
+      lock() {
+        this.occupied = true;
+      },
+      unlock() {
+        this.occupied = false;
       }
     }
   }
