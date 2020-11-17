@@ -6,6 +6,7 @@
             <td v-for="column in 8" :class="['pieceBox', isAvailableMove(row - 1, column - 1) ? 'highLight' : '' ]" :key="column">
               <i @click.prevent="play(row - 1, column - 1)"
                  class="fas fa-circle fa-4x"
+                 :disabled="!isAvailableMove(row - 1, column - 1)"
                  :style="{ color: getPlayerColor(row - 1, column - 1) }"/>
             </td>
             <td class="numberBox">
@@ -41,10 +42,12 @@
     },
     methods: {
       play(x, y) {
-        this.sendMove('PLAY',
-          response => this.$emit('onplay', response.data),
-          error => this.$emit('error', error.response.data, error.response.data.includes('%s')),
-          { moveX: x, moveY: y, gameId: this.gameId });
+        if (this.board[x][y] === 'EMPTY') {
+          this.sendMove('PLAY',
+            response => this.$emit('onplay', response.data),
+            error => this.$emit('error', error.response.data, error.response.data.includes('%s')),
+            { moveX: x, moveY: y, gameId: this.gameId });
+        }
       },
       isAvailableMove(x, y) {
         return this.availableMoves.filter(move => move.x === parseInt(x) && move.y === parseInt(y)).length > 0;
