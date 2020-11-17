@@ -75,25 +75,11 @@
                                 <resource>
                                     <directory>${project.parent.basedir}/web/dist</directory>
                                     <includes>
-                                        <include>static/</include>
+                                        <include>js/</include>
+										<include>css/</include>
                                         <include>index.html</include>
+										<include>*.PNG</include>
                                     </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                     <execution>
-                        <id>copy liquibase</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/classes/db</outputDirectory>
-                            <overwrite>true</overwrite>
-                            <resources>
-                                <resource>
-                                    <directory>./src/main/db</directory>                               
                                 </resource>
                             </resources>
                         </configuration>

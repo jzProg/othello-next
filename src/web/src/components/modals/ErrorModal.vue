@@ -34,7 +34,7 @@ export default {
       header: 'header',
       closeButton: 'close',
       body: 'body',
-      footer: 'footer'
+      footer: 'footer',
     }
   },
   methods: {

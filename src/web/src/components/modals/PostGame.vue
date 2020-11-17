@@ -16,7 +16,7 @@
    </template>
    <template v-slot:[footer]>
      <div class="text-center">
-       <button class="btn btn-primary" @click.prevent="play">Play Again</button>
+       <button class="btn btn-primary" @click.prevent="play">Play again</button>
      </div>
   </template>
   </Modal>
