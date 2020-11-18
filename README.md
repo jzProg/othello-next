@@ -4,7 +4,7 @@
 [![Heroku](https://heroku-badge.herokuapp.com/?app=othello-next)](https://othello-next.herokuapp.com/)
 [![Demo](https://img.shields.io/badge/demo-online-green.svg)](https://othello-next.herokuapp.com/)
 
-Upgrade of my older [Othello](https://github.com/jzProg/othello-game) project, using web technologies. I re-implement the backend logic to follow the State Design Pattern and added new features (e.g available moves for player, difficulty choice).
+Upgrade of my older [Othello](https://github.com/jzProg/othello-game) project, using web technologies. I re-implemented the backend logic to follow the State Design Pattern and added new features (e.g available moves for player, difficulty choice).
 
 ## Technologies and Tools
 
