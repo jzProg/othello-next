@@ -7,7 +7,9 @@ Upgrade of my older [Othello](https://github.com/jzProg/othello-game) project, u
 
 ## Technologies and Tools
 
-- **Vue CLI** (v4.5.7) / **Vue** (v3.0.0) for frontend.
+<img src="https://img.shields.io/badge/vuejs%20-%2335495e.svg?&style=for-the-badge&logo=vue.js&logoColor=%234FC08D"/><img src="https://img.shields.io/badge/spring%20-%236DB33F.svg?&style=for-the-badge&logo=spring&logoColor=white"/>
+
+- **Vue CLI** (v4.5.7) / **Vue** (v3.0.0) for frontend. 
 - **Spring Boot** (v2.3.4), for backend.
 
 ## Setup Instructions
