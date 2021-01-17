@@ -35,32 +35,32 @@
   }
 
   #turnDiv{
-     margin-left: 3%;
-     background-color: green;
-     color: white;
-     min-height: 30px;
-     width: 120px;
-     padding: 10px;
-     margin-top: 1%;
-     border-radius: 2px;
-     font-size: 150%;
+   margin-left: 3%;
+   background-color: green;
+   color: white;
+   min-height: 30px;
+   width: 120px;
+   padding: 10px;
+   margin-top: 1%;
+   border-radius: 2px;
+   font-size: 150%;
   }
 
   #scoreDiv{
-     margin-left: 3%;
-     margin-top: 1%;
-     font-size: 200%;
+   margin-left: 3%;
+   margin-top: 1%;
+   font-size: 200%;
   }
 
   #resetDiv{
-     margin-left: 3%;
-     margin-top: 1%;
-     font-size: 200%;
+   margin-left: 3%;
+   margin-top: 1%;
+   font-size: 200%;
   }
 
   #titleDiv{
-     margin-top: 1%;
-     font-size: 250%;
+   margin-top: 1%;
+   font-size: 250%;
   }
 
  .reset {

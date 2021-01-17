@@ -12,120 +12,154 @@
 </template>
 
 <script>
+  import { ref, provide } from 'vue';
   import Options from '@/components/modals/ChooseColor';
   import GameBoard from '@/components/GameBoard';
   import TextUI from '@/components/TextUI';
   import GameStatusBar from '@/components/GameStatusBar';
   import ErrorModal from '@/components/modals/ErrorModal';
   import PostGame from '@/components/modals/PostGame';
-  import ApiHelper from '@/common/mixins/ApiHelper';
+  import useApiHelper from '@/common/ApiHelper';
 
   export default {
     name: 'GameScreen',
     components: { GameBoard, GameStatusBar, Options, TextUI, ErrorModal, PostGame },
-    mixins: [ApiHelper],
-    data() {
-      return {
-        playerColor: '',
-        msgs: [],
-        gameId: null,
-        showOptions: false,
-        options: [ 'BLACK', 'WHITE'],
-        levels: ['EASY', 'DIFFICULT'],
-        playerTurn: '',
-        board: [],
-        showError: false,
-        loseTurn: false,
-        score: [],
-        level: '',
-        availableMoves: [],
-        gameFinished: false,
-        loseTurnMessage: 'No moves Available. You lose turn...',
-      }
-    },
-    created() {
-     this.init();
-    },
-    methods: {
-      onError(error, loseTurn = false) {
-        this.msgs.push(error.response.data.replace('%s', this.playerTurn));
-        this.showError = true;
-        this.loseTurn = loseTurn;
-      },
-      onPlayed(response) {
-        this.availableMoves = [];
-        const { gameMessage, playerToMove, board, score, result, availableMoves }  = response;
-        this.msgs.push(gameMessage);
-        this.playerTurn = playerToMove.toLowerCase();
-        this.board = board;
-        this.score = score;
-        this.updatePlayerAvailableMoves(playerToMove, availableMoves);
-        if (result) {
-          this.gameFinished = true;
-          this.msgs.push(result);
-        }
-        if (!this.gameFinished && playerToMove !== this.playerColor) this.getAIMove();
-      },
-      onErrorConfirm() {
-        this.showError = false;
-        this.afterErrorAction();
-      },
-      afterErrorAction() {
-        if (this.loseTurn) {
-          this.loseTurn = false; //reset
-          this.getAIMove();
-        }
-      },
-      getAIMove() {
-        this.availableMoves = [];
-        setTimeout(() => {
-          this.sendMove('AI', (response) => {
-              const { gameMessage, playerToMove, board, score, availableMoves, result } = response.data;
-              this.msgs.push(gameMessage);
-              this.playerTurn = playerToMove.toLowerCase();
-              this.board = board;
-              this.score = score;
-              this.updatePlayerAvailableMoves(playerToMove, availableMoves);
-              if (result) {
-                this.gameFinished = true;
-                this.msgs.push(result);
-              }
-              if (!this.gameFinished && playerToMove !== this.playerColor) this.onError({ response: { data : this.loseTurnMessage }}, true); // if no available moves for the user, AI plays again but first inform user
-          }, this.onError);
-        }, 1000);
-      },
-      choose(choices) {
-        this.playerColor = choices.color || this.options[0]; // black -> easy
-        this.level = choices.level || this.levels[0]; // default -> easy
-        this.playerTurn = this.options[0]; // black always first
-        this.sendMove('CHOOSE', (response) => {
-          this.showOptions = false;
-          const { gameMessage, score, availableMoves } = response.data;
-          this.msgs.push(gameMessage);
-          this.score = score;
-          this.availableMoves = availableMoves;
-          if (this.playerColor === this.options[1]) this.getAIMove(); // if user chose WHITE, AI plays first
-        }, () => {}, { playerColor: this.playerColor, gameId: this.gameId, gameLevel: this.level });
-      },
-      init() {
-        this.sendMove('INIT', (response) => {
+    setup() {
+      const options = [ 'BLACK', 'WHITE'];
+      const levels = ['EASY', 'DIFFICULT'];
+      const loseTurnMessage = 'No moves Available. You lose turn...';
+
+      const playerColor = ref('');
+      const msgs = ref([]);
+      const game_id = ref(null);
+      const showOptions = ref(true);
+      const playerTurn = ref('');
+      const game_board = ref([]);
+      const showError = ref(false);
+      const loseTurn = ref(false);
+      const level = ref('');
+      const game_score = ref([]);
+      const available_moves = ref([]);
+      const gameFinished = ref(false);
+
+      const { sendMove } = useApiHelper();
+
+      provide('sendMove', sendMove);
+
+      init();
+
+      function init() { // mounted ??
+        sendMove('INIT', (response) => {
           const { gameId, gameMessage, playerToMove, board }  = response.data;
-          this.gameId = gameId;
-          this.board = board;
-          this.playerTurn = playerToMove.toLowerCase();
-          this.msgs.push(gameMessage);
-          this.showOptions = true;
+          game_id.value = gameId;
+          game_board.value = board;
+          playerTurn.value = playerToMove.toLowerCase();
+          msgs.value.push(gameMessage);
+          showOptions.value = true;
         });
-      },
-      reset() {
-        this.gameFinished = false;
-        this.msgs = [];
-        this.init();
-      },
-      updatePlayerAvailableMoves(playerToMove, availableMoves) {
-        if (playerToMove === this.playerColor) this.availableMoves = availableMoves;
       }
-    }
+
+      function onError(error, loseTurn = false) {
+        msgs.value.push(error.response.data.replace('%s', playerTurn.value));
+        showError.value = true;
+        loseTurn.value = loseTurn;
+      }
+
+      function onPlayed(response) {
+        available_moves.value = [];
+        const { gameMessage, playerToMove, board, score, result, availableMoves }  = response;
+        msgs.value.push(gameMessage);
+        playerTurn.value = playerToMove.toLowerCase();
+        game_board.value = board;
+        game_score.value = score;
+        updatePlayerAvailableMoves(playerToMove, availableMoves);
+        if (result) {
+          gameFinished.value = true;
+          msgs.value.push(result);
+        }
+        if (!gameFinished.value && playerToMove !== playerColor.value) getAIMove();
+      }
+
+      function onErrorConfirm() {
+        showError.value = false;
+        afterErrorAction();
+      }
+
+      function afterErrorAction() {
+        if (loseTurn.value) {
+          loseTurn.value = false; //reset
+          getAIMove();
+        }
+      }
+
+      function reset() {
+        gameFinished.value = false;
+        msgs.value = [];
+        init();
+      }
+
+      function updatePlayerAvailableMoves(playerToMove, availableMoves) {
+        if (playerToMove === playerColor.value) available_moves.value = availableMoves;
+      }
+
+      function choose(choices) {
+        playerColor.value = choices.color || options[0]; // black -> easy
+        level.value = choices.level || levels[0]; // default -> easy
+        playerTurn.value = options[0]; // black always first
+        sendMove('CHOOSE', function (response) {
+          showOptions.value = false;
+          const { gameMessage, score, availableMoves } = response.data;
+          msgs.value.push(gameMessage);
+          game_score.value = score;
+          available_moves.value = availableMoves;
+          if (playerColor.value === options[1]) getAIMove(); // if user chose WHITE, AI plays first
+        }, () => {}, { playerColor: playerColor.value, gameId: game_id.value, gameLevel: level.value });
+      }
+
+      function getAIMove() {
+        available_moves.value = [];
+        setTimeout(() => {
+          sendMove('AI', (response) => {
+              const { gameMessage, playerToMove, board, score, availableMoves, result } = response.data;
+              msgs.value.push(gameMessage);
+              playerTurn.value = playerToMove.toLowerCase();
+              game_board.value = board;
+              game_score.value = score;
+              updatePlayerAvailableMoves(playerToMove, availableMoves);
+              if (result) {
+                gameFinished.value = true;
+                msgs.value.push(result);
+              }
+              if (!gameFinished.value && playerToMove !== playerColor.value) onError({ response: { data : loseTurnMessage }}, true); // if no available moves for the user, AI plays again but first inform user
+          }, onError.value);
+        }, 1000);
+      }
+
+      return {
+        options,
+        levels,
+        playerColor,
+        msgs,
+        gameId : game_id,
+        showOptions,
+        playerTurn,
+        board : game_board,
+        showError,
+        loseTurn,
+        level,
+        score : game_score,
+        availableMoves : available_moves,
+        gameFinished,
+        onError,
+        onPlayed,
+        onErrorConfirm,
+        afterErrorAction,
+        reset,
+        updatePlayerAvailableMoves,
+        choose,
+        getAIMove
+      }
+    },
   }
 </script>
 

@@ -1,9 +1,12 @@
 <template>
   <div class="game-container row">
       <div id="gameDiv" class="text-center">
-        <table style='width:600px;margin: 0 auto;margin-top: 2%'>
+        <table>
           <tr v-for="row in 8" :key="row">
-            <td v-for="column in 8" :class="['pieceBox', isAvailableMove(row - 1, column - 1) ? 'highLight' : '' ]" :key="column"  :disabled="!isAvailableMove(row - 1, column - 1) || !!occupied">
+            <td v-for="column in 8"
+                :class="['pieceBox', isAvailableMove(row - 1, column - 1) ? 'highLight' : '' ]"
+                :key="column"
+                :disabled="!isAvailableMove(row - 1, column - 1) || !!occupied">
               <i @click.prevent="play(row - 1, column - 1)"
                  class="fas fa-circle fa-4x"
                  :style="{ color: getPlayerColor(row - 1, column - 1) }"/>
@@ -23,48 +26,62 @@
 </template>
 
 <script>
-  import ApiHelper from '@/common/mixins/ApiHelper';
+  import { ref, toRefs, inject } from 'vue';
 
   export default {
     name: 'GameBoard',
     props: ['gameId', 'board', 'availableMoves'],
-    mixins: [ApiHelper],
-    data() {
-      return {
-        occupied: false,
-        colorPerState: {
-          EMPTY: 'transparent',
-          WHITE: 'white',
-          BLACK: 'black'
-        },
-        letters: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
+    setup(props, context) {
+      const { gameId, board, availableMoves } = toRefs(props);
+
+      const colorPerState = {
+        EMPTY: 'transparent',
+        WHITE: 'white',
+        BLACK: 'black'
       }
-    },
-    methods: {
-      play(x, y) {
-        if (this.isAvailableMove(x, y) && this.occupied === false) {
-          this.lock();
-          this.sendMove('PLAY',
-            response => { this.unlock(); this.$emit('onplay', response.data) },
-            error => { this.unlock(); this.$emit('error', error.response.data, error.response.data.includes('%s')) },
-            { moveX: x, moveY: y, gameId: this.gameId });
+
+      const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+
+      const occupied = ref(false);
+
+      const sendMove = inject('sendMove');
+
+      function lock() {
+        occupied.value = true;
+      }
+
+      function unlock() {
+        occupied.value = false;
+      }
+
+      function getPlayerColor(x, y) {
+        if (!board.value[x] || !board.value[x][y]) {
+          return colorPerState.EMPTY;
         }
-      },
-      isAvailableMove(x, y) {
-        if (!this.board[x] || this.board[x][y] !== 'EMPTY') return false;
-        return this.availableMoves.filter(move => move.x === parseInt(x) && move.y === parseInt(y)).length > 0;
-      },
-      getPlayerColor(x, y) {
-        if (!this.board[x] || !this.board[x][y]) {
-          return this.colorPerState.EMPTY;
+        return colorPerState[board.value[x][y]];
+      }
+
+      function isAvailableMove(x, y) {
+        if (!board.value[x] || board.value[x][y] !== 'EMPTY') return false;
+        return availableMoves.value.filter(move => move.x === parseInt(x) && move.y === parseInt(y)).length > 0;
+      }
+
+      function play(x, y) {
+        if (isAvailableMove(x, y) && occupied.value === false) {
+          lock();
+          sendMove('PLAY',
+            response => { unlock(); context.emit('onplay', response.data) },
+            error => { unlock(); context.emit('error', error.response.data, error.response.data.includes('%s')) },
+            { moveX: x, moveY: y, gameId: gameId.value });
         }
-        return this.colorPerState[this.board[x][y]];
-      },
-      lock() {
-        this.occupied = true;
-      },
-      unlock() {
-        this.occupied = false;
+      }
+
+      return {
+         letters,
+         occupied,
+         getPlayerColor,
+         isAvailableMove,
+         play
       }
     }
   }
@@ -73,6 +90,12 @@
 <style scoped>
   #gameDiv {
     background-color: gray;
+  }
+
+  table {
+    width: 600px;
+    margin: 0 auto;
+    margin-top: 2%;
   }
 
   .pieceBox {
